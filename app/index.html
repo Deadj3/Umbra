@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Umbra Editor</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="shape.css">
+<link rel="stylesheet" href="tactical.css">
+<link rel="stylesheet" href="layout.css">
+<link rel="stylesheet" href="ring.css">
+</head>
+<body>
+<a class="skip" href="#cv">Skip to map canvas</a>
+
+<header id="top">
+  <nav id="menubar" role="menubar" aria-label="Main menu"></nav>
+  <div class="grow"></div>
+  <label class="namefield" id="projTab"><span class="projic" id="projIc" aria-hidden="true"></span><span class="sr">Map name</span><input id="mapName" value="mymap" size="12" spellcheck="false" autocomplete="off" aria-label="Map name"></label>
+  <span class="vsep" aria-hidden="true"></span>
+  <button class="ib" id="tbUndo" type="button" aria-label="Undo" data-tip="Undo (Ctrl+Z)" data-tipdir="down"></button>
+  <button class="ib" id="tbRedo" type="button" aria-label="Redo" data-tip="Redo (Ctrl+Y)" data-tipdir="down"></button>
+  <button class="ib" id="tbSettings" type="button" aria-label="Options" data-tip="Options" data-tipdir="down"></button>
+  <button class="btn primary tx" id="tbExport" type="button" data-tip="Export mod (Ctrl+E)" data-tipdir="down"></button>
+</header>
+
+<div id="optbar" role="toolbar" aria-label="Tool options">
+  <span id="toolName" class="toolname">Brush</span>
+  <label class="opt" data-tools="brush erase spray natural line rect ellipse">Size
+    <input id="oSize" type="range" min="1" max="450" value="3"><output id="oSizeV">3</output></label>
+  <label class="opt" data-tools="brush erase line rect ellipse poly">Pattern
+    <select id="oShape"></select></label>
+  <label class="opt" data-tools="brush erase spray natural line rect ellipse poly">Density
+    <input id="oDens" type="range" min="5" max="100" value="35"><output id="oDensV">35%</output></label>
+  <label class="opt" data-tools="natural">Patch size
+    <input id="oPatch" type="range" min="4" max="60" value="18"><output id="oPatchV">18</output></label>
+  <label class="opt" data-tools="road">Road width
+    <input id="oRoad" type="range" min="1" max="30" value="6"><output id="oRoadV">6</output></label>
+  <label class="opt" data-tools="rect ellipse poly">Shape
+    <select id="oMode"><option value="filled">Filled</option><option value="outline">Outline</option></select></label>
+  <label class="opt" data-tools="brush erase spray natural line rect ellipse poly road">Mirror
+    <select id="oSym">
+      <option value="0">Off</option>
+      <option value="1">Left / right</option>
+      <option value="2">Top / bottom</option>
+      <option value="3">Both (4-way)</option>
+    </select></label>
+  <span class="opt" data-tools="place" id="oPlace"></span>
+  <span class="opt" data-tools="props" id="oProps"></span>
+  <span class="opt" data-tools="cell">
+    <button id="oCellFill" class="btn" type="button">Fill cells</button>
+    <button id="oCellClear" class="btn" type="button">Clear cells</button>
+    <button id="oCellNone" class="btn ghost" type="button">Deselect</button>
+  </span>
+</div>
+
+<aside id="rail" aria-label="Tools"></aside>
+
+<div id="zoomPill" role="group" aria-label="Zoom">
+  <button class="ib" id="tbZoomOut" type="button" aria-label="Zoom out" data-tip="Zoom out (-)"></button>
+  <output id="zoomVal" class="zoomval" aria-label="Zoom level">100%</output>
+  <button class="ib" id="tbZoomIn" type="button" aria-label="Zoom in" data-tip="Zoom in (+)"></button>
+  <button class="ib" id="tbFit" type="button" aria-label="Fit map to window" data-tip="Fit to window (Ctrl+0)"></button>
+</div>
+<div id="coords"><span id="stPos">Ready</span></div>
+
+<main id="stage">
+  <canvas id="cv" tabindex="0" aria-label="Map canvas. Use the tool rail and menus to edit."></canvas>
+</main>
+
+<div id="rszSide" class="rsz" role="separator" aria-orientation="vertical" aria-label="Resize the layers panel" tabindex="0" title="Drag to resize. Double-click to reset."></div>
+<section id="inspector" aria-label="Inspector">
+  <div id="insTabs" class="itabs" role="tablist" aria-label="Inspector"></div>
+  <aside id="side" aria-label="Maps, layers and colours">
+  <div id="mapTabs" class="mtabs" role="tablist" aria-label="Active map"></div>
+  <div id="ovl" class="ovl" role="group" aria-label="Overlay other maps"></div>
+  <details open id="dLayers" class="panel">
+    <summary>Layers</summary>
+    <div class="pbody">
+      <label class="chk"><input type="checkbox" id="sepChk"> <span>Separate colours into layers</span></label>
+      <div id="layers"></div>
+      <div id="layerActions" class="row"></div>
+    </div>
+  </details>
+  <details open id="dPal" class="panel">
+    <summary>Palette</summary>
+    <div class="pbody">
+      <div id="setBar" class="setbar" hidden>
+        <strong id="setName"></strong>
+        <button id="setFlip" class="btn" type="button"></button>
+      </div>
+      <div class="seg" role="group" aria-label="Palette view">
+        <button type="button" id="pvGrid" aria-pressed="true">Swatches</button>
+        <button type="button" id="pvList" aria-pressed="false">List</button>
+      </div>
+      <div id="pal" role="group" aria-label="Colours"></div>
+      <div id="palEdit" class="pedit">
+        <div class="cur"><i id="curSw"></i><div><strong id="curName"></strong><div id="curRgb" class="muted"></div></div></div>
+        <label>Name <input id="pn" autocomplete="off"></label>
+        <label>Colour <input id="pc" type="color"></label>
+        <button id="pa" class="btn" type="button">Add colour</button>
+      </div>
+    </div>
+  </details>
+</aside>
+  <div id="insTiles" hidden role="tabpanel" aria-label="Tiles"></div>
+  <aside id="pp" hidden aria-label="Buildings and props"></aside>
+</section>
+
+<footer id="status">
+  <span id="stHint" class="muted"></span>
+  <span id="stMsg" class="msg" role="status" aria-live="polite"></span>
+  <span id="stSize" class="stsize" aria-label="Estimated export size"></span>
+</footer>
+
+<input id="fi" type="file" class="sr" tabindex="-1" aria-hidden="true">
+<input id="fr" type="file" class="sr" tabindex="-1" aria-hidden="true" accept=".txt">
+
+<script src="icons.js"></script>
+<script src="app.js"></script>
+<script src="rules_data.js"></script>
+<script src="rar.js"></script>
+<script src="zip.js"></script>
+<script src="gamepack.js"></script>
+<script src="tiles.js"></script>
+<script src="pzfiles.js"></script>
+<script src="igHost.js"></script>
+<script src="gamedata.js"></script>
+<script src="building/model.js"></script>
+<script src="building/vanilla.js"></script>
+<script src="building/catalog.js"></script>
+<script src="building/render.js"></script>
+<script src="building/convert.js"></script>
+<script src="building/tbx.js"></script>
+<script src="dressing.js"></script>
+<script src="dressui.js"></script>
+<script src="places.js"></script>
+<script src="placepanel.js"></script>
+<script src="lotfiles.js"></script>
+<script src="modexport.js"></script>
+<script src="sizeest.js"></script>
+<script src="view3d.js"></script>
+<script src="ring.js"></script>
+</body>
+</html>

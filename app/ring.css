@@ -1,0 +1,282 @@
+/* ====================== Ring layout ======================
+   The map fills the whole window. Everything else floats over it: the Layers / Tiles / Props panel and the
+   tool options bar are windows you move and resize (and pop out into real windows for a second monitor),
+   the tool keys are a slim console on the right, the colours run down a bordered rail on the left,
+   and the menu bar folds away into the round logo. Scoped to body.ring, so the classic layout is untouched.
+   Palette tokens come from style.css, fonts from tactical.css (Lexend, Inter, Unbounded for the logo). */
+
+/* things ring.js adds are invisible in the classic layout */
+body:not(.ring) .rc{display:none!important}
+
+body.ring{display:block;padding:0;gap:0;overflow:hidden;background:var(--bg);
+  --rg-line:#26262b;--rg-hdr:linear-gradient(#151518,#0b0b0c);--rg-grip:#3a3a40;--rg-sec:#0d0d0f;--rg-strip:rgba(10,10,11,.92);--rg-strip-line:#4a4a54;--rg-inset:#000;
+  --rg-cons:#232328;--rg-key:linear-gradient(#2a2a2f,#17171a);--rg-keyh:linear-gradient(#34343a,#1d1d21);--rg-keysh:#000;
+  --rg-red:linear-gradient(#5a1520,#34090f);--rg-grn:linear-gradient(#26302a,#141a16);--rg-top:linear-gradient(rgba(3,3,4,.96),rgba(3,3,4,.62) 70%,rgba(3,3,4,0));--rg-vig:rgba(2,2,3,.6);--rg-glow:color-mix(in srgb,var(--accent) 16%,transparent)}
+/* the light theme keeps the same layout in light materials; high contrast gets white edges */
+:root[data-theme=light] body.ring{--rg-line:#b8c0cc;--rg-hdr:linear-gradient(#f4f6fa,#e3e8f0);--rg-grip:#9aa5b5;--rg-sec:#eef1f6;--rg-strip:rgba(255,255,255,.94);--rg-strip-line:#b8c0cc;--rg-inset:rgba(0,0,0,.06);
+  --rg-cons:#b8c0cc;--rg-key:linear-gradient(#ffffff,#e6ebf2);--rg-keyh:linear-gradient(#ffffff,#d8dfe9);--rg-keysh:#aab3c1;--metal-bg:var(--panel);--raised:var(--panel2);
+  --rg-red:linear-gradient(#f6c9cf,#e7a3ac);--rg-grn:linear-gradient(#d6ecd9,#b5d6bb);--rg-top:linear-gradient(rgba(238,241,246,.96),rgba(238,241,246,.7) 70%,rgba(238,241,246,0));--rg-vig:rgba(120,130,150,.3)}
+:root[data-hc] body.ring{--rg-line:#fff;--rg-strip-line:#fff;--rg-cons:#fff;--rg-grip:#fff}
+:root[data-theme=classic] body.ring,:root[data-theme=midnight] body.ring,:root[data-theme=forest] body.ring{--raised:var(--panel2)}
+body.ring :where(button){border-radius:0}
+
+/* ---------- the map fills the window ---------- */
+body.ring #stage{position:fixed;inset:0;z-index:0;clip-path:none;background:var(--bg);margin:0}
+body.ring #stage::after{display:none}
+body.ring #stage::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(95% 95% at 50% 50%,transparent 55%,var(--rg-vig))}
+
+/* ---------- top bar: round logo, folds away ---------- */
+body.ring #top{position:fixed;left:0;right:0;top:0;z-index:9;height:54px;min-height:0;padding:0 12px;gap:6px;border:0;clip-path:none;
+  background:var(--rg-top);pointer-events:none}
+body.ring #top>*{pointer-events:auto}
+body.ring #top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--accent);box-shadow:0 0 14px color-mix(in srgb,var(--accent) 55%,transparent);pointer-events:none;transform-origin:left center;animation:rcrun .45s cubic-bezier(.2,.7,.2,1)}
+body.ring.top-col #top::after{display:none}
+@keyframes rcrun{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+body.ring #top>.grow{pointer-events:none}
+#rcLogo{width:36px;height:36px;border-radius:50%!important;margin:0 4px 0 0;padding:0;flex:none;display:grid;place-items:center;cursor:pointer;
+  background:var(--accent);color:#fff;border:0;box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--accent-dark),0 6px 18px rgba(0,0,0,.6);transition:transform .12s,background .12s}
+#rcLogo span{font:800 16px/1 "Unbounded",var(--disp);padding-left:1px;pointer-events:none}
+#rcLogo:hover{background:var(--hi);transform:scale(1.07)}
+#rcLogo:focus-visible{outline:2px solid var(--accent-glow);outline-offset:3px}
+#rcMark{font:800 15px "Unbounded",var(--disp);letter-spacing:.2em;margin:0 14px 0 6px;pointer-events:none;color:var(--text)}
+body.ring #menubar>button{font:600 13px var(--ui);letter-spacing:.02em;text-transform:uppercase;padding:0 8px;height:30px;color:var(--text);border-radius:0}
+body.ring #menubar>button:hover,body.ring #menubar>button[aria-expanded=true]{color:var(--hi);background:none}
+body.ring .namefield{height:28px;padding:0 14px;gap:8px;background:var(--rg-strip);border:1px solid var(--border);border-radius:0;box-shadow:none;clip-path:none}
+body.ring .namefield::before{content:"";width:6px;height:6px;background:var(--hi);transform:rotate(45deg);flex:none}
+body.ring .namefield input{font:600 14px var(--ui);letter-spacing:.02em;text-transform:uppercase;width:130px;height:24px;padding:0 4px;border:0;background:none;color:var(--text)}
+body.ring #top .ib{border-radius:0;color:var(--muted)}
+body.ring #top .ib:hover{color:var(--text);background:none}
+body.ring #tbExport{height:46px;padding:0 24px;margin:0 0 0 8px;background:var(--accent);color:#fff;border:0;border-radius:0;clip-path:none;font:600 14px var(--ui);letter-spacing:.02em;text-transform:uppercase}
+body.ring #tbExport:hover{background:var(--hi)}
+body.ring.top-col #top{right:auto;background:none;height:58px;align-items:flex-start;padding-top:11px}
+body.ring.top-col #top>:not(#rcLogo){display:none!important}
+
+/* ---------- the colour rail on the left, with a border ---------- */
+#rcStrip{position:fixed;left:16px;top:80px;bottom:30px;width:40px;padding:0;z-index:6;display:flex;flex-direction:column;box-sizing:content-box;
+  background:#000;border:0;outline:2px solid var(--accent-dark);outline-offset:0;box-shadow:0 0 0 10px #000,0 12px 30px rgba(0,0,0,.7)}
+#rcStrip.sets{top:128px}
+#rcFlip{position:fixed;left:16px;top:70px;width:40px;height:44px;padding:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;box-sizing:content-box;
+  background:#000;color:var(--text);border:0;border-radius:0;outline:2px solid var(--accent-dark);outline-offset:0;cursor:pointer}
+#rcFlip[hidden]{display:none}
+#rcFlip:hover,#rcFlip:focus-visible{background:#1b1b1f}
+#rcFlip:focus-visible{outline-color:var(--text)}
+#rcFlip .dots{display:flex;gap:5px;height:6px}
+#rcFlip .dots i{width:6px;height:6px;border-radius:50%;background:#5a5a64}
+#rcFlip .dots i.on{background:var(--text)}
+#rcStrip::before{content:"";position:absolute;left:-2px;right:-2px;top:-6px;height:4px;background:var(--accent)}
+#rcStrip button{display:block;flex:1 1 0;min-height:4px;width:100%;padding:0;border:0;border-radius:0;cursor:pointer;transition:none;box-shadow:none;background-clip:padding-box}
+#rcStrip button:hover,#rcStrip button:focus-visible{outline:0;box-shadow:inset 0 0 0 2px var(--text);position:relative;z-index:1}
+#rcStrip button.on{box-shadow:inset 0 0 0 2px var(--text),inset 0 0 0 4px #000}
+#rcStrip button.on:hover,#rcStrip button.on:focus-visible{box-shadow:inset 0 0 0 2px var(--text),inset 0 0 0 4px #000}
+/* the card for the colour under the pointer: name, RGB and the tiles it places */
+#rcLegend{position:fixed;left:84px;z-index:55;width:340px;background:var(--raised);border:1px solid var(--border);border-left:3px solid var(--accent);box-shadow:0 18px 44px rgba(0,0,0,.7);pointer-events:none;opacity:0;transform:translateX(-6px);transition:opacity .1s,transform .1s}
+#rcLegend.show{opacity:1;transform:none}
+#rcLegend .rl-h{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border)}
+#rcLegend .rl-h i{width:34px;height:34px;border:1px solid var(--muted);flex:none}
+#rcLegend .rl-h b{font:600 14px/1.15 var(--disp);flex:1;min-width:0}
+#rcLegend kbd,.ktip kbd{font:500 13px var(--num);border:1px solid var(--accent-dark);color:var(--hi);padding:1px 6px;background:none}
+#rcLegend .rl-r{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:7px 12px;border-bottom:1px solid var(--border);font:600 13px var(--ui);letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+#rcLegend .rl-r span+span{font:500 14px var(--num);letter-spacing:.02em;color:var(--text);text-transform:none}
+#rcLegend .rl-t{display:flex;gap:12px;padding:10px 12px;align-items:center;min-height:86px}
+#rcLegend canvas{width:96px;height:66px;flex:none;border:1px solid var(--border);background:#050506;image-rendering:pixelated}
+#rcLegend .rl-n{font:600 16px/1.35 var(--ui);color:var(--text);min-width:0;overflow-wrap:anywhere}
+#rcLegend .rl-n em{display:block;font:600 13px var(--ui);font-style:normal;letter-spacing:.02em;text-transform:uppercase;color:var(--hi);margin-bottom:2px}
+
+/* ---------- the key console (tools) on the right ---------- */
+body.ring{--rk-h:clamp(20px,calc((100vh - 290px) / 17),30px)}
+body.ring #rail{position:fixed;right:14px;top:50%;transform:translateY(-50%);margin:0;z-index:7;width:62px;max-height:calc(100vh - 16px);overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;gap:0;padding:16px 7px 10px;clip-path:none;border:1px solid var(--rg-cons);border-radius:5px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),0 3px 0 #000,0 14px 34px rgba(0,0,0,.7)}
+body.ring #rail::before,body.ring #rail::after{content:"";position:absolute;left:0;right:0;height:12px;pointer-events:none;
+  background:radial-gradient(circle,#6a6a72 0 1.5px,#2a2a2f 2px 3.5px,transparent 4px) left 3px top 2px/12px 12px no-repeat,radial-gradient(circle,#6a6a72 0 1.5px,#2a2a2f 2px 3.5px,transparent 4px) right 3px top 2px/12px 12px no-repeat}
+body.ring #rail::before{top:2px}
+body.ring #rail::after{bottom:2px}
+body.ring #rail .tgrp{display:flex;flex-direction:column;align-items:center;grid-template-columns:none;gap:0;padding:0}
+body.ring #rail .tgrp+.tgrp{border-top:1px solid var(--rg-line);margin-top:2px;padding-top:7px}
+body.ring #rail .tb,body.ring #rail .rck{width:44px;height:var(--rk-h);margin:0 0 5px;padding:0;display:grid;place-items:center;border-radius:4px!important;border:2px solid #000;color:var(--text);cursor:pointer;
+  background:var(--rg-key);box-shadow:0 3px 0 var(--rg-keysh),inset 0 1px 0 rgba(255,255,255,.08);transition:transform .08s,box-shadow .08s}
+body.ring #rail .tb:hover,body.ring #rail .rck:hover{background:var(--rg-keyh)}
+body.ring #rail .tb:focus-visible,body.ring #rail .rck:focus-visible{outline:2px solid var(--accent-glow);outline-offset:2px}
+body.ring #rail .rci{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:square;stroke-linejoin:miter;display:block;pointer-events:none}
+body.ring #rail .tb[data-tool=erase]:not([aria-pressed=true]),body.ring #rail .rck:not(.on){background:var(--rg-red)}
+body.ring #rail .tb[data-tool=place]:not([aria-pressed=true]),body.ring #rail .tb[data-tool=props]:not([aria-pressed=true]){background:var(--rg-grn)}
+body.ring #rail .tb[aria-pressed=true],body.ring #rail .rck.on{background:linear-gradient(var(--hi),var(--accent));color:#fff;transform:translateY(2px);box-shadow:0 1px 0 #000,0 0 16px 2px color-mix(in srgb,var(--accent) 60%,transparent),inset 0 1px 0 rgba(255,255,255,.25)}
+/* the pop-out button on top of the console */
+body.ring #rail .cpo{width:44px;height:20px;margin-bottom:7px;padding:0;display:grid;place-items:center;color:var(--muted);border:0;border-bottom:1px solid var(--rg-line);background:none;cursor:pointer}
+body.ring #rail .cpo:hover{color:#fff;background:var(--accent)}
+body.ring #rail .cpo svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:square;pointer-events:none}
+/* the three maps' current colours as little lamps */
+body.ring .curcol{margin-top:2px;padding-top:7px;border-top:1px solid var(--rg-line);align-items:center;width:100%}
+body.ring .curcol span{display:none}
+body.ring .curcol .pair{display:flex;gap:4px;justify-content:center}
+body.ring .curcol i{width:11px;height:11px;border-radius:50%;border:2px solid #000;cursor:pointer;opacity:.75}
+body.ring .curcol i.on{opacity:1;box-shadow:0 0 0 1px var(--text),0 0 9px 1px rgba(255,255,255,.3)}
+/* console popped out into its own window */
+body.popdoc #rail{position:static;transform:none;margin:0 auto;max-height:none}
+body.popdoc.pop-rail{display:grid;place-items:center;min-height:100vh;overflow:auto}
+
+/* themed tool tips */
+.ktip{position:fixed;z-index:210;width:250px;background:var(--raised);border:1px solid var(--border);border-right:3px solid var(--accent);padding:9px 12px;display:grid;gap:4px;pointer-events:none;opacity:0;transition:opacity .1s;box-shadow:0 14px 36px rgba(0,0,0,.7)}
+.ktip.show{opacity:1}
+.ktip b{font:600 16px var(--ui);letter-spacing:.02em;display:flex;justify-content:space-between;gap:10px;align-items:center;text-transform:uppercase}
+.ktip span{font:500 13.5px/1.35 var(--ui);color:var(--muted)}
+
+/* ---------- floating windows ---------- */
+body.ring .rwin,body.ring #optbar.rwin,body.ring #inspector.rwin{position:fixed;display:flex;flex-direction:column;min-width:220px;min-height:46px;z-index:10;margin:0;border:1px solid var(--rg-line);border-radius:0;box-shadow:0 20px 56px rgba(0,0,0,.75);
+  clip-path:none;overflow:visible;color:var(--text)}
+.rwin.focus{border-color:var(--accent-dark);box-shadow:0 20px 56px rgba(0,0,0,.75),0 0 30px var(--rg-glow)}
+.rwin[hidden],.rwin.gone{display:none!important}
+.rwin>.wh{height:32px;flex:none;display:flex;align-items:stretch;gap:2px;padding:0 4px 0 0;cursor:grab;position:relative;border:0;border-bottom:1px solid var(--border);background:var(--rg-hdr);touch-action:none;user-select:none}
+.rwin>.wh:active{cursor:grabbing}
+.rwin.focus>.wh::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--accent);pointer-events:none}
+.wh .gr{width:22px;display:grid;place-items:center;color:var(--rg-grip);flex:none}
+.wh .gr::before{content:"";width:8px;height:14px;background:radial-gradient(circle,currentColor 1.2px,transparent 1.5px) 0 0/4px 5px}
+.wh .tt{font:600 13px var(--ui);letter-spacing:.02em;text-transform:uppercase;display:flex;align-items:center;padding:0 8px;color:var(--text);white-space:nowrap}
+.wh .fl{flex:1;min-width:6px}
+.wh .wb2{width:28px;padding:0;display:grid;place-items:center;color:var(--muted);background:none;border:0;border-radius:0;cursor:pointer;flex:none}
+.wh .wb2:hover{color:var(--text);background:var(--raised)}
+.wh .wb2.x:hover{background:var(--accent);color:#fff}
+.wh .wb2 svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:square;display:block;pointer-events:none}
+.rwin.fold>:not(.wh):not(.rz){display:none!important}
+.rwin.fold{min-height:0!important;height:auto!important}
+.rz{position:absolute;z-index:3;touch-action:none}
+.rz.e{right:-4px;top:8px;bottom:8px;width:9px;cursor:ew-resize}
+.rz.w{left:-4px;top:8px;bottom:8px;width:9px;cursor:ew-resize}
+.rz.s{bottom:-4px;left:8px;right:8px;height:9px;cursor:ns-resize}
+.rz.n{top:-4px;left:8px;right:8px;height:9px;cursor:ns-resize}
+.rz.ne{right:-5px;top:-5px;width:18px;height:18px;cursor:nesw-resize}
+.rz.nw{left:-5px;top:-5px;width:18px;height:18px;cursor:nwse-resize}
+.rz.se{right:-5px;bottom:-5px;width:18px;height:18px;cursor:nwse-resize}
+.rz.sw{left:-5px;bottom:-5px;width:18px;height:18px;cursor:nesw-resize}
+.rz.se::after{content:"";position:absolute;right:6px;bottom:6px;width:9px;height:9px;border-right:2px solid var(--hi);border-bottom:2px solid var(--hi);pointer-events:none}
+.rz:hover::before{content:"";position:absolute;inset:3px;background:var(--accent-dark);opacity:.6}
+.rz.se:hover::before,.rz.sw:hover::before,.rz.ne:hover::before,.rz.nw:hover::before{display:none}
+.rwin.fold .rz{display:none}
+/* a window popped out into its own OS window fills it */
+body.popdoc .rwin{position:fixed;left:0!important;top:0!important;right:0;bottom:0;width:auto!important;height:auto!important;max-width:none;border:0;box-shadow:none}
+body.popdoc .rwin>.wh{cursor:default}
+body.popdoc .rwin .rz{display:none}
+body.popdoc .rwin.fold{height:auto!important;bottom:auto}
+
+/* ---------- the panel window (Layers | Tiles | Props) ---------- */
+body.ring #inspector.rwin,body.ring #optbar.rwin{display:flex;flex-direction:column;margin:0;z-index:10;border:1px solid var(--rg-line);background:var(--metal-bg);gap:0;padding:0;grid-area:auto}
+body.ring #inspector.rwin.focus,body.ring #optbar.rwin.focus{border-color:var(--accent-dark)}
+body.ring #rail.metal{background:var(--metal-bg)}
+body.ring #insTabs.wh{height:32px;flex:none;border:0;border-bottom:1px solid var(--border);background:var(--rg-hdr)}
+body.ring #inspector>#side,body.ring #inspector>#pp,body.ring #inspector>#insTiles{clip-path:none;background:var(--panel);border:0;min-height:0}
+body.ring #inspector>#side{overflow:auto}
+body.ring #insTabs{padding:0;gap:0;border:0;border-bottom:1px solid var(--border);display:flex}
+body.ring #insTabs.wh{padding:0 4px 0 0}
+body.ring #insTabs [role=tab]{flex:none;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;height:auto;font:600 13px var(--ui);letter-spacing:.02em;text-transform:uppercase;color:var(--muted);background:none;border:0;border-bottom:0!important;clip-path:none;border-radius:0;position:relative}
+body.ring #insTabs [role=tab]:hover{color:var(--text);background:none}
+body.ring #insTabs [role=tab][aria-selected=true]{color:var(--text);background:var(--accent-tint);box-shadow:inset 0 -2px var(--accent)}
+body.ring #insTabs [role=tab] .ic{display:none}
+body.ring #rszSide{display:none!important}
+body.ring #side .panel>summary,body.ring #mapTabs::before,body.ring #ovl .ovt{background:var(--rg-sec);color:var(--hi);font:600 13px var(--ui);letter-spacing:.02em;text-transform:uppercase;border-bottom:1px solid var(--border)}
+body.ring #mapTabs .mtab.on,body.ring .lr.active{background:linear-gradient(90deg,var(--accent-tint),color-mix(in srgb,var(--accent-tint) 25%,transparent));box-shadow:inset 3px 0 var(--accent);border-color:var(--border)}
+body.ring .lr{border-bottom-color:var(--border)}
+body.ring #mapTabs .mtab{border-bottom-color:var(--border)}
+body.ring #side .panel{border-bottom-color:var(--border)}
+body.ring .lr .lrdel{color:var(--muted);opacity:0}
+body.ring .lr:hover .lrdel,body.ring .lr.active .lrdel,body.ring .lr .lrdel:focus-visible{opacity:1}
+body.ring .lr .lrdel:hover{background:var(--accent);color:#fff}
+body.ring .lr .lrdel:disabled{visibility:hidden}
+.btn.dgr{border-color:var(--accent-dark);color:var(--hi)}
+.btn.dgr:hover:not(:disabled){background:var(--accent);border-color:var(--accent);color:#fff}
+body.ring .btn{border-radius:0;font:600 13px var(--ui);letter-spacing:.02em;text-transform:uppercase}
+body.ring .btn.primary,body.ring .btn.p{background:var(--accent);border-color:var(--accent);color:#fff}
+body.ring .pbody{padding-bottom:10px}
+body.ring #layerActions{flex-wrap:wrap;gap:6px}
+
+/* ---------- the tool options window ---------- */
+body.ring #optbar{padding:0;gap:0;border-radius:0;clip-path:none;text-transform:none;letter-spacing:0;font-size:inherit;flex-wrap:nowrap;max-width:none;align-items:stretch;min-height:0}
+#optbody{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding:10px 16px;flex:1;min-height:0;overflow:auto;scrollbar-width:thin}
+body.ring #optbar .toolname{font:600 16px var(--ui);letter-spacing:.02em;text-transform:uppercase;color:var(--hi);min-width:0}
+body.ring #optbar .opt{display:flex;align-items:center;gap:10px;font:600 13px var(--ui);letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+body.ring #optbar .opt[hidden]{display:none}
+body.ring #optbar output{font:500 14px var(--num);color:var(--text);min-width:30px;letter-spacing:0;text-transform:none}
+body.ring #optbar select{background:var(--bg);color:var(--text);border:1px solid #2a2a30;height:28px;padding:0 8px;font:500 14px var(--ui);border-radius:0;text-transform:none;letter-spacing:0}
+body.ring #optbar input[type=range]{-webkit-appearance:none;appearance:none;background:none;height:20px;width:110px;cursor:pointer;margin:0}
+body.ring #optbar input[type=range]::-webkit-slider-runnable-track{height:3px;background:#2a2a30}
+body.ring #optbar input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:8px;height:16px;margin-top:-6px;background:var(--hi);border:0;border-radius:0}
+.rccur{display:inline-flex;align-items:center;gap:8px;font:600 14px var(--ui);padding-right:18px;border-right:1px solid var(--border);color:var(--text)}
+.rccur i{width:16px;height:16px;border:1px solid var(--text);display:block}
+/* the export size and download estimate sit at the far right of the options window */
+body.ring #optbody #stSize{margin-left:auto;font:500 14px/1.25 var(--num);color:var(--text);opacity:1;text-transform:none;letter-spacing:0;padding:4px 0 4px 14px;border-left:1px solid var(--border);white-space:nowrap}
+
+/* ---------- readouts: cell coordinates and zoom, in the same material as the windows ---------- */
+body.ring #coords,body.ring #zoomPill{position:fixed;z-index:9;margin:0;display:flex;align-items:stretch;border:1px solid var(--rg-line);border-radius:0;clip-path:none;padding:0;gap:0;
+  background:var(--metal-bg);box-shadow:0 12px 30px rgba(0,0,0,.7);cursor:grab;touch-action:none;pointer-events:auto;grid-area:auto}
+body.ring #coords:active,body.ring #zoomPill:active{cursor:grabbing}
+body.ring #coords.focus,body.ring #zoomPill.focus{border-color:var(--accent-dark);box-shadow:0 12px 30px rgba(0,0,0,.7),0 0 22px var(--rg-glow)}
+body.ring #coords.focus::before,body.ring #zoomPill.focus::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--accent)}
+.wd-gr{width:16px;display:grid;place-items:center;color:var(--rg-grip);border-right:1px solid var(--border);background:var(--rg-hdr);flex:none}
+.wd-gr::before{content:"";width:6px;height:16px;background:radial-gradient(circle,currentColor 1.1px,transparent 1.4px) 0 0/3px 5px}
+body.ring #coords #stPos{padding:6px 12px;font:500 13px/1.2 var(--num);color:var(--muted);letter-spacing:.02em;white-space:nowrap;display:flex;align-items:center;min-width:150px}
+body.ring #zoomPill .ib{width:30px;height:auto;align-self:stretch;border:0;border-left:1px solid var(--border);border-radius:0;color:var(--muted);background:none}
+body.ring #zoomPill .ib:hover{background:var(--accent);color:#fff}
+body.ring #zoomVal{font:700 22px/1 var(--num);letter-spacing:-.02em;min-width:70px;text-align:center;padding:6px 8px;color:var(--text);display:grid;place-items:center}
+
+/* ---------- messages: a toast, since there is no status bar ---------- */
+body.ring #status{position:fixed;left:50%;top:62px;transform:translateX(-50%);z-index:60;padding:0;border:0;background:none;min-height:0;display:block;pointer-events:none;clip-path:none;width:auto;max-width:min(560px,90vw)}
+body.ring #status #stHint,body.ring #status #stSize{display:none}
+body.ring #stMsg{display:block;background:var(--accent);color:#fff;padding:9px 16px;font:600 14px var(--ui);letter-spacing:.02em;text-align:center;text-transform:none;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+body.ring #stMsg:empty{display:none}
+
+/* the 3D view's own panel sits inside the left edge */
+body.ring .v3ui{left:56px;top:70px}
+
+/* ---------- the wheel ---------- */
+#rcWheelBack{position:fixed;inset:0;z-index:70;background:rgba(2,2,3,.45)}
+#rcWheel{position:fixed;z-index:71;width:340px;height:340px;margin:-170px 0 0 -170px}
+#rcWheel svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 14px 34px rgba(0,0,0,.7))}
+#rcWheel .wedge{fill:rgba(10,10,11,.96);stroke:#3a3a40;stroke-width:1;cursor:pointer}
+#rcWheel .wedge:hover,#rcWheel .wedge:focus-visible{fill:var(--raised);stroke:var(--accent-dark);outline:0}
+#rcWheel .wedge.on{fill:var(--accent);stroke:var(--hi)}
+#rcWheel .wlab{fill:var(--text);font:600 13px var(--ui);letter-spacing:.02em;text-anchor:middle;pointer-events:none;text-transform:uppercase}
+#rcWheel .core{fill:var(--bg);stroke:var(--accent-dark)}
+#rcWheel .sub{font:500 12px var(--num);letter-spacing:0;opacity:.7}
+
+@media (prefers-reduced-motion:reduce){body.ring #top::after{animation:none}#rcStrip button,#rcLegend,.ktip,#rcLogo{transition:none}}
+
+/* classic layout: the options sit straight in the bar again, and anything marked hidden stays hidden */
+body:not(.ring) #optbody{display:contents}
+body.ring .gone{display:none!important}
+body.ring #optbar.rwin>.wh{border-bottom:1px solid var(--border)}
+/* in a window of its own, the window's own title bar closes it, so the fold and close buttons are not needed */
+body.popdoc .rwin .wb2.x,body.popdoc .rwin .wb2.fo{display:none}
+
+
+/* ---------- clearer text: bigger, heavier, full strength ---------- */
+body.ring{--font:15px;--text-muted:#C2C2C9;--ctl:38px}
+body.ring #optbar .opt{color:var(--text)}
+body.ring #menubar>button{height:36px;padding:0 10px}
+.wh .tt{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.wh{min-height:34px}
+body.ring #optbody{flex-wrap:wrap;row-gap:8px}
+body.ring #stSize{line-height:1.3}
+body.ring #side .pbody,body.ring #side .lr,body.ring #side .mtab{font-size:1em}
+
+/* the Place Overlay switch in the top bar */
+body.ring #menubar>button[aria-pressed=true]{background:var(--accent);color:#fff}
+body.ring #menubar>button[aria-pressed=true]:hover{background:var(--hi)}
+
+/* keep the whole top bar, with Export, on screen: the menus never shrink, the name field gives way first, then the type gets smaller */
+body.ring #menubar{flex:none}
+body.ring #menubar>button{flex:none;white-space:nowrap}
+body.ring #menubar>button.mtab{letter-spacing:.02em;padding:0 9px}
+body.ring .namefield{flex:0 1 150px;min-width:64px;padding:0 10px}
+body.ring .namefield input{width:100%;min-width:0}
+body.ring #tbExport{flex:none}
+@media (max-width:1560px){body.ring #rcMark{display:none}}
+@media (max-width:1640px){body.ring #menubar>button{padding:0 7px}body.ring #menubar>button.mtab{padding:0 8px}body.ring .vsep{display:none}}
+@media (max-width:1500px){body.ring #menubar>button{font-size:12px;padding:0 6px;letter-spacing:0}body.ring #menubar>button.mtab{padding:0 7px}body.ring #top{gap:4px}}
+@media (max-width:1360px){body.ring #menubar>button{font-size:11.5px;padding:0 5px}body.ring #menubar>button.mtab{padding:0 6px}body.ring .namefield{display:none}}
+@media (max-width:1180px){body.ring #tbExport span{display:none}body.ring #tbExport{padding:0 14px}body.ring #tbUndo,body.ring #tbRedo,body.ring #tbSettings{display:none}}
+@media (max-width:1060px){body.ring #menubar>button{font-size:10.5px;padding:0 3px}body.ring #menubar>button.mtab{padding:0 4px}body.ring #top{padding:0 6px}}
+body.ring #layerActions .btn{font-size:12px;padding-left:9px;padding-right:9px;letter-spacing:.01em}
+
+/* grab strip at the top of the tool bar */
+body.ring #rail .rgrip{position:absolute;left:0;right:0;top:0;height:16px;z-index:3;cursor:grab;touch-action:none}
+body.ring #rail .rgrip:active{cursor:grabbing}
+body.ring.popdoc #rail .rgrip{display:none}

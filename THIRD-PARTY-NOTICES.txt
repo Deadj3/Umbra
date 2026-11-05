@@ -1,0 +1,19 @@
+PZ Map Editor - third-party notices
+
+PZ Map Editor was created by DeadJ.
+
+Project Zomboid is a trademark of The Indie Stone Ltd. PZ Map Editor is an independent fan-made tool. It is not
+affiliated with, endorsed by or supported by The Indie Stone.
+
+This program runs on Electron (https://www.electronjs.org), which is distributed under the MIT licence and includes
+Chromium and other components under their own licences. The licence texts are in the files "LICENSE" and
+"LICENSES.chromium.html" in the program folder.
+
+Tile art and rules
+------------------
+The tile packs offered with this editor are used with their authors' credit, as the authors ask:
+  - Project Zomboid tiles and the default tile rules: The Indie Stone Ltd.
+  - Community Tile Pack (Unofficial Mappers): tilesets by Blackwood, Dirkies (ddd), Dylan, Ekron, Fear and TK.
+Please keep these credits with any copy you share. The same list is in the editor under Help, Credits.
+
+Typefaces: Lexend, Inter and Unbounded (each by its Project Authors; Unbounded is used only for the logo letter and the name mark), all under the SIL Open Font License 1.1 (see ui/fonts).

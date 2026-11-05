@@ -1,0 +1,13 @@
+{
+  "name": "umbra-editor",
+  "productName": "Umbra Editor",
+  "version": "1.0.0",
+  "description": "A map editor for Project Zomboid Build 42: base, vegetation and zombie spawn maps, 3D view, tile library, an annotation map creator with player spawn points and zones, a 3D building editor, and a mod export for the Steam Workshop.",
+  "author": "DeadJ",
+  "license": "SEE LICENSE IN LICENSE",
+  "main": "main.js",
+  "homepage": "https://github.com/Deadj3/Umbra",
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  }
+}

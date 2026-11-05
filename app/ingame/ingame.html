@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Annotation Map Creator</title>
+<link rel="stylesheet" href="../tactical.css">
+<link rel="stylesheet" href="ingame.css">
+</head>
+<body>
+<a class="skip" href="#cv">Skip to the map</a>
+<header id="top">
+  <h1>Annotation Map Creator</h1>
+  <span id="mapname" class="muted"></span>
+  <div class="grow"></div>
+  <label class="fld">Style
+    <select id="style">
+      <option value="satellite">Editor colours</option>
+      <option value="parchment">Parchment (game look)</option>
+      <option value="ink">Ink on white</option>
+    </select>
+  </label>
+  <label class="chk"><input type="checkbox" id="grid" checked> Cell grid</label>
+  <label class="chk"><input type="checkbox" id="showlbl" checked> Names</label>
+  <button id="refresh" title="Read the map from the editor again">Refresh map</button>
+  <button id="export" class="primary">Export…</button>
+</header>
+
+<main>
+  <section id="stage" aria-label="Map">
+    <canvas id="cv" tabindex="0" aria-label="Map. Use the tools on the right to place names, spawn points and zones."></canvas>
+    <input id="inl" type="text" hidden aria-label="Name" maxlength="80" autocomplete="off">
+    <div id="hint" role="status"></div>
+    <div id="busy" hidden>Reading the map…</div>
+    <div id="zoombox">
+      <button id="zout" aria-label="Zoom out">−</button>
+      <button id="zfit" aria-label="Fit the whole map">Fit</button>
+      <button id="zin" aria-label="Zoom in">+</button>
+    </div>
+  </section>
+
+  <aside id="side">
+    <section aria-labelledby="h-add">
+      <h2 id="h-add">Add to the map</h2>
+      <p class="muted small">Pick a type, then click the map. Roads, rivers and creeks are lines: click each bend, then press Enter or double-click. Zones are drawn by dragging a rectangle.</p>
+      <div id="kinds"></div>
+    </section>
+
+    <section aria-labelledby="h-sel">
+      <h2 id="h-sel">Selected</h2>
+      <div id="props"><p class="muted small">Nothing selected. Use the Select tool (V) and click a name.</p></div>
+    </section>
+
+    <section aria-labelledby="h-list" class="grow">
+      <h2 id="h-list">Everything placed <span id="count" class="pill">0</span></h2>
+      <input id="q" type="search" placeholder="Search" aria-label="Search names, spawn points and zones">
+      <div class="row">
+        <button id="detect" title="Looks for oceans, lakes, ponds, rivers and creeks on the map and adds a blank name for each one">Find water bodies</button>
+        <button id="clearEmpty" title="Remove names that were never filled in">Remove blank</button>
+      </div>
+      <ul id="list" aria-label="Names, spawn points and zones on the map"></ul>
+    </section>
+  </aside>
+</main>
+
+<footer id="status">
+  <span id="pos">&nbsp;</span>
+  <span class="grow"></span>
+  <span id="zoomv"></span>
+  <span class="keys">V select · H pan · Esc cancel · Del remove · Ctrl+Z undo</span>
+</footer>
+
+<dialog id="dx" aria-labelledby="dxh">
+  <form method="dialog" id="dxform">
+    <h2 id="dxh">Export</h2>
+    <fieldset>
+      <legend>What to export</legend>
+      <label class="chk"><input type="radio" name="fmt" value="png" checked> <span><b>Map picture (PNG)</b><br><span class="muted small">The in-game style map with every name written on it.</span></span></label>
+      <label class="chk"><input type="radio" name="fmt" value="xml"> <span><b>Map features (XML)</b><br><span class="muted small">Named roads, rivers, lakes, towns and so on, plus water and forest shapes, in the key and value form used by the in-game map files.</span></span></label>
+      <label class="chk"><input type="radio" name="fmt" value="spawn"> <span><b>Player spawn points (spawnpoints.lua)</b><br><span class="muted small">Where new characters can start, listed per profession.</span></span></label>
+      <label class="chk"><input type="radio" name="fmt" value="zones"> <span><b>Zones (objects.lua)</b><br><span class="muted small">Town, forest, farm and other zones as rectangles.</span></span></label>
+      <label class="chk"><input type="radio" name="fmt" value="csv"> <span><b>Name list (CSV)</b><br><span class="muted small">A spreadsheet of every name, type and position.</span></span></label>
+      <label class="chk"><input type="radio" name="fmt" value="json"> <span><b>Names (JSON)</b><br><span class="muted small">Everything needed to restore the names elsewhere.</span></span></label>
+    </fieldset>
+    <div id="dxpng">
+      <label class="fld">Picture size
+        <select id="dxscale"><option value="1">1× (smallest)</option><option value="2" selected>2×</option><option value="4">4×</option></select>
+      </label>
+      <label class="chk"><input type="checkbox" id="dxgrid"> Include the cell grid</label>
+      <label class="chk"><input type="checkbox" id="dxlegend" checked> Include a title and key</label>
+      <label class="chk"><input type="checkbox" id="dxspawns"> Show spawn points</label>
+      <label class="chk"><input type="checkbox" id="dxzones"> Show zones</label>
+      <label class="fld">Title <input type="text" id="dxtitle" maxlength="60"></label>
+    </div>
+    <div id="dxxml" hidden>
+      <label class="fld">Shape detail
+        <select id="dxstep"><option value="2">Fine (2 tiles)</option><option value="4" selected>Normal (4 tiles)</option><option value="8">Coarse (8 tiles)</option><option value="16">Very coarse (16 tiles)</option></select>
+      </label>
+      <label class="chk"><input type="checkbox" id="dxwater" checked> Water shapes</label>
+      <label class="chk"><input type="checkbox" id="dxforest" checked> Forest shapes</label>
+    </div>
+    <div id="dxorig" hidden>
+      <div class="two">
+        <label class="fld">First cell X <input type="number" id="dxcx" value="0" min="0" max="999" step="1"></label>
+        <label class="fld">First cell Y <input type="number" id="dxcy" value="0" min="0" max="999" step="1"></label>
+      </div>
+      <p class="muted small">The cell numbers the top left corner of this map has in the game world. Spawn points and zones are written in world tiles, so this must match the world origin used in WorldEd.</p>
+    </div>
+    <p id="dxmsg" class="muted small" role="status"></p>
+    <div class="actions">
+      <button value="cancel" formnovalidate>Close</button>
+      <button id="dxgo" class="primary" value="go">Export</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="../pzfiles.js"></script>
+<script src="ingame.js"></script>
+</body>
+</html>

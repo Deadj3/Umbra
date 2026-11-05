@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Umbra Editor Help</title>
+<style>:root{
+  /* Umbra crimson on black (default). --accent fills buttons; --hi is the lighter red for outlines and text on black. */
+  --bg:#030304;--panel:#0a0a0b;--panel2:#111113;--panel3:#1a1a1d;--line:#2a2a30;
+  --text:#ececee;--muted:#c2c2c9;--accent:#c8102e;--accent-ink:#ffffff;--accent-soft:rgba(200,16,46,.28);--hi:#e5384a;
+  --focus:#ff6b78;--danger:#ff6b78;--warn:#e0a526;--ok:#6cbf6a;--sel:#ff6b78;--canvas:#030304;--mapbg:#0a0a0b;--grid:rgba(255,255,255,.22);
+  --radius:8px;--font:13.5px;--ctl:34px;
+  color-scheme:dark;
+}
+:root[data-theme=classic]{
+  --bg:#07070a;--panel:#101014;--panel2:#18181e;--panel3:#24242c;--line:#2e2e38;
+  --text:#ece8e8;--muted:#a09698;--accent:#34c76b;--accent-ink:#03140a;--accent-soft:rgba(52,199,107,.16);--hi:#34c76b;
+  --focus:#8bdcff;--danger:#ff7b7b;--canvas:#0a0a0d;--mapbg:#101014;--grid:rgba(255,255,255,.22);
+}
+:root[data-theme=light]{--hi:var(--hi);--warn:#b7791f;--ok:#2f8f46;
+  --bg:#eef1f6;--panel:#ffffff;--panel2:#f1f4f9;--panel3:#dfe5ee;--line:#c5cdda;
+  --text:#14181f;--muted:#4b5668;--accent:#0b7a4e;--accent-ink:#ffffff;--accent-soft:rgba(11,122,78,.12);
+  --focus:#0b57d0;--danger:#b3261e;--canvas:#cfd6e2;--mapbg:#f7f9fc;--grid:rgba(0,0,0,.28);color-scheme:light;
+}
+:root[data-theme=midnight]{--hi:var(--hi);--warn:#b7791f;--ok:#2f8f46;
+  --bg:#080b16;--panel:#0e1426;--panel2:#161e38;--panel3:#222c4e;--line:#27315a;
+  --accent:#74a9ff;--accent-ink:#06142e;--accent-soft:rgba(116,169,255,.16);--canvas:#050711;--mapbg:#0f1530;
+}
+:root[data-theme=forest]{--hi:var(--hi);--warn:#b7791f;--ok:#2f8f46;
+  --bg:#0d1510;--panel:#141f18;--panel2:#1c2b21;--panel3:#2a3f31;--line:#2d4535;
+  --accent:#a3dc6e;--accent-ink:#13230a;--accent-soft:rgba(163,220,110,.16);--canvas:#09100b;--mapbg:#131d16;
+}
+:root[data-hc]{--hi:var(--hi);
+  --bg:#000;--panel:#000;--panel2:#0c0c0c;--panel3:#1d1d1d;--line:#fff;--text:#fff;--muted:#fff;
+  --accent:#ffe600;--accent-ink:#000;--accent-soft:rgba(255,230,0,.22);--focus:#00e5ff;--canvas:#000;--mapbg:#111;--grid:rgba(255,255,255,.6);
+}
+:root[data-large]{--font:16.5px;--ctl:40px}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--text);font:var(--font)/1.55 system-ui,"Segoe UI",Roboto,sans-serif}
+.shell{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100vh}
+nav#side{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;background:var(--panel);border-right:1px solid var(--line);padding:16px 12px}
+nav#side h1{font-size:1.1em;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+nav#side h1 b{background:var(--accent);color:var(--accent-ink);border-radius:7px;padding:2px 7px;font-size:.95em}
+nav#side input{width:100%;height:var(--ctl);background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:0 10px;color:var(--text);margin-bottom:10px}
+nav#side ul{list-style:none;margin:0;padding:0}
+nav#side li a{display:block;padding:6px 10px;border-radius:6px;color:var(--text);text-decoration:none}
+nav#side li a:hover{background:var(--panel3)}
+nav#side li a.on{background:var(--accent-soft);color:var(--hi);font-weight:600}
+main{padding:28px min(5vw,56px) 80px;max-width:1040px}
+h1.t{font-size:2em;margin:.1em 0 .2em}
+h2{font-size:1.5em;margin:2.2em 0 .5em;padding-top:.6em;border-top:1px solid var(--line)}
+h3{font-size:1.15em;margin:1.6em 0 .3em}
+p,li{max-width:76ch}
+a{color:var(--hi)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.lead{font-size:1.1em;color:var(--muted)}
+.muted{color:var(--muted)}
+code{background:var(--panel3);border-radius:4px;padding:1px 6px;font-size:.92em;word-break:break-word}
+kbd{background:var(--panel3);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 7px;font:600 .85em ui-monospace,Consolas,monospace}
+figure{margin:14px 0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;max-width:760px}
+figure.small{max-width:380px;display:inline-block;vertical-align:top;margin-right:12px}
+figure img{max-width:100%;height:auto;display:block;border-radius:6px;image-rendering:auto;cursor:zoom-in}
+figcaption{color:var(--muted);margin-top:6px;font-size:.92em}
+.callout{background:var(--accent-soft);border-left:4px solid var(--hi);border-radius:6px;padding:10px 14px;margin:14px 0;max-width:76ch}
+.warn{background:rgba(255,160,60,.14);border-left-color:#ff9f3c}
+.tbl{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:.94em}
+th,td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{position:sticky;top:0;background:var(--panel2)}
+td.num{font-family:"Inter",system-ui,sans-serif;white-space:nowrap;color:var(--muted)}
+td.tiles{color:var(--muted);font-size:.9em}
+i.sw{display:inline-block;width:22px;height:22px;border-radius:5px;border:1px solid var(--line);vertical-align:middle;margin-right:9px}
+td strong{vertical-align:middle}
+.tag{background:var(--accent-soft);color:var(--hi);border-radius:999px;padding:0 8px;font-size:.78em;font-weight:600;white-space:nowrap}
+ol.steps{counter-reset:s;list-style:none;padding:0}
+ol.steps>li{counter-increment:s;position:relative;padding:4px 0 10px 44px}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:2px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700}
+.cols{columns:3 170px;max-width:760px}
+.tool{border-top:1px dashed var(--line);margin-top:10px}
+dialog#lb{border:0;background:transparent;max-width:96vw;max-height:96vh;padding:0}
+dialog#lb::backdrop{background:rgba(0,0,0,.8)}
+dialog#lb img{max-width:96vw;max-height:88vh;border-radius:8px;display:block}
+.btn{background:var(--panel3);border:1px solid var(--line);border-radius:6px;height:var(--ctl);padding:0 14px;color:var(--text);margin-top:8px}
+@media (max-width:820px){.shell{grid-template-columns:1fr}nav#side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}}
+@media print{nav#side{display:none}.shell{display:block}h2{break-before:auto}figure{break-inside:avoid}}
+pre.code{background:var(--panel2, #1f2530);border:1px solid var(--line, #2c3441);border-radius:8px;padding:12px 14px;overflow:auto;font:12.5px/1.5 Consolas,"Cascadia Mono",monospace;white-space:pre}
+/* Typefaces (bundled in ../fonts, SIL Open Font License): Lexend for letters, Inter for numbers */
+@font-face{font-family:"Inter";font-style:normal;font-weight:400 800;font-display:swap;src:url("../fonts/inter-cyrillic.woff2") format("woff2");unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:"Inter";font-style:normal;font-weight:400 800;font-display:swap;src:url("../fonts/inter-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:"Inter";font-style:normal;font-weight:400 800;font-display:swap;src:url("../fonts/inter-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"Lexend";font-style:normal;font-weight:400 800;font-display:swap;src:url("../fonts/lexend-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:"Lexend";font-style:normal;font-weight:400 800;font-display:swap;src:url("../fonts/lexend-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+body{font-family:"Lexend","Segoe UI",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+h1,h2,h3,nav#toc a.h{font-family:"Lexend","Segoe UI",system-ui,sans-serif;letter-spacing:.04em}
+h1,h2{text-transform:uppercase;letter-spacing:.14em}
+code,kbd,pre{font-family:Consolas,"Cascadia Mono",ui-monospace,monospace}
+</style>
+</head>
+<body>
+<div class="shell">
+<nav id="side" aria-label="Contents">
+  <h1><b>PZ</b> Help</h1>
+  <input id="q" type="search" placeholder="Filter the contents" aria-label="Filter the contents">
+  <ul id="toc">
+    <li><a href="#menus">Menus</a></li>
+    <li><a href="#maps">Maps</a></li>
+    <li><a href="#colours">Colour reference</a></li>
+    <li><a href="#layers">Layers and separate colours</a></li>
+    <li><a href="#overlays">Overlays</a></li>
+    <li><a href="#files">Saving, importing, exporting</a></li>
+    <li><a href="#view3d">3D view</a></li>
+    <li><a href="#tiles">Tile Manager</a></li>
+    <li><a href="#ingame">Annotation map creator</a></li>
+    <li><a href="#building">3D building editor</a></li>
+    <li><a href="#mod">Exporting a mod</a></li>
+    <li><a href="#worlded">Importing into WorldEd</a></li>
+    <li><a href="#perf">Performance settings</a></li>
+    <li><a href="#keys">Keyboard shortcuts</a></li>
+    <li><a href="#access">Accessibility and settings</a></li>
+    <li><a href="#trouble">Troubleshooting</a></li>
+    <li><a href="#limits">Limits and sources</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+</nav>
+<main>
+<h1 class="t">Umbra Editor</h1>
+<p class="lead">A map editor for Project Zomboid Build 42. It draws the images that WorldEd turns into a map: the base map, the vegetation map and the zombie spawn map. One pixel is one tile, and one cell is 256 by 256 tiles. Maps of up to 100 by 100 cells are supported.</p>
+
+<h2 id="menus">Menus</h2>
+<p>Everything in the editor is reached from the menu bar at the top. Click a menu name to open it, or press <kbd>Tab</kbd> to reach the bar and use the arrow keys and <kbd>Enter</kbd>. <kbd>Esc</kbd> closes it. The last two buttons before <em>Help</em> are tabs that open a tool in its own window.</p>
+
+<h3>File</h3>
+<div class="tbl"><table>
+<tr><th>Item</th><th>What it does</th></tr>
+<tr><td><strong>New map</strong></td><td>Starts an empty map. Enter the width and height in cells; one cell is 256 by 256 tiles.</td></tr>
+<tr><td><strong>Open project</strong> <kbd>Ctrl</kbd>+<kbd>O</kbd></td><td>Opens a saved <code>.pzmap</code> project with all its maps, layers, names, spawn points, zones and mod settings.</td></tr>
+<tr><td><strong>Save project</strong> <kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>Saves everything into one <code>.pzmap</code> file.</td></tr>
+<tr><td><strong>Open the Umbra Editor folder</strong></td><td>Opens the <code>Umbra Editor</code> folder in your Documents, made the first time you save. <code>Projects</code> holds saved projects, <code>Exports</code> holds map pictures, in-game map files and exported mods, and <code>Buildings</code> holds building files. The Save and Open windows start in the right one.</td></tr>
+<tr><td><strong>Import image</strong></td><td>Loads a PNG or BMP into the map that is selected in the right panel. Each pixel is matched to the nearest colour.</td></tr>
+<tr><td><strong>Export PNG / Export BMP</strong></td><td>Writes <code>name.bmp</code>, <code>name_veg.bmp</code> and <code>name_ZombieSpawnMap.bmp</code> (or PNG copies). BMP is the format WorldEd reads. The name comes from the <em>Map name</em> box at the top right.</td></tr>
+<tr><td><strong>Export mod (Steam Workshop)</strong> <kbd>Ctrl</kbd>+<kbd>E</kbd></td><td>Writes the whole mod folder and the Workshop files. See <a href="#mod">Exporting a mod</a>.</td></tr>
+<tr><td><strong>Tile Manager</strong></td><td>Opens <a href="#tiles">Tile Manager</a>, where the game's tilesheets and other game files are added.</td></tr>
+</table></div>
+<figure class="small"><a href="img/menu-file.png" class="zoom"><img src="img/menu-file.png" alt="The File menu." loading="lazy"></a><figcaption>The File menu.</figcaption></figure>
+
+<h3>Edit</h3>
+<div class="tbl"><table>
+<tr><th>Item</th><th>What it does</th></tr>
+<tr><td><strong>Undo / Redo</strong> <kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>Reverses or repeats the last change, on whichever map it was made.</td></tr>
+<tr><td><strong>Select cells</strong> <kbd>C</kbd></td><td>Switches to the cell tool: click or drag to select whole 256 by 256 cells.</td></tr>
+<tr><td><strong>Fill / Clear selected cells</strong></td><td>Fills the selected cells with the current colour, or empties them.</td></tr>
+<tr><td><strong>Deselect cells</strong></td><td>Removes the cell selection.</td></tr>
+</table></div>
+
+<h3>View</h3>
+<div class="tbl"><table>
+<tr><th>Item</th><th>What it does</th></tr>
+<tr><td><strong>Zoom in / out</strong> <kbd>+</kbd> <kbd>-</kbd></td><td>Zooms the map. The mouse wheel does the same.</td></tr>
+<tr><td><strong>Fit to window</strong> <kbd>Ctrl</kbd>+<kbd>0</kbd></td><td>Shows the whole map.</td></tr>
+<tr><td><strong>Actual size</strong> <kbd>Ctrl</kbd>+<kbd>1</kbd></td><td>One map pixel per screen pixel.</td></tr>
+<tr><td><strong>3D view</strong> <kbd>V</kbd></td><td>Shows the map (or a window of up to 6 by 6 cells) in an isometric view with the game's tiles. Painting works there too. See <a href="#view3d">3D view</a>.</td></tr>
+<tr><td><strong>Cell grid / 16-tile grid / Tile grid</strong> <kbd>G</kbd></td><td>Lines at every cell, every 16 tiles, or every tile. The finer grids appear when zoomed in.</td></tr>
+</table></div>
+
+<h3>Map</h3>
+<div class="tbl"><table>
+<tr><th>Item</th><th>What it does</th></tr>
+<tr><td><strong>Active map</strong> <kbd>M</kbd></td><td>Chooses which map is painted: Base map, Vegetation or Zombie spawn. The tabs at the top of the right panel do the same.</td></tr>
+<tr><td><strong>Overlay</strong></td><td>Shows the other maps faintly on top of the active one, for example the vegetation over the base map.</td></tr>
+<tr><td><strong>Overlay opacity</strong></td><td>How strongly the overlays are drawn.</td></tr>
+</table></div>
+<figure class="small"><a href="img/menu-map.png" class="zoom"><img src="img/menu-map.png" alt="The Map menu." loading="lazy"></a><figcaption>The Map menu.</figcaption></figure>
+
+<h3>Layers</h3>
+<p>Each map can have several layers, like a paint program, so that for example roads can be kept apart from the terrain. <strong>Layer tools</strong> in the Layers panel opens a menu beside the panel with the usual tools (new, duplicate, merge down, rename, move, solo, show or lock all, clear, delete), and layers can be dragged by their handle to change their order. <em>Separate colours into layers</em> instead gives every colour its own layer that can be hidden or locked. See <a href="#layers">Layers and separate colours</a>.</p>
+
+<h3 id="ring">The Ring layout</h3>
+<p>The editor opens in the <b>Ring</b> layout. The map takes the whole window and every control floats over it, so you can arrange the screen the way you work.</p>
+<figure class=""><a href="img/ring-overview.png" class="zoom"><img src="img/ring-overview.png" alt="The Ring layout: the colour rail on the left with its key open on one colour, the panel and tool options windows, the tool bar on the right, and the readouts at the bottom." loading="lazy"></a><figcaption>The Ring layout: the colour rail on the left with its key open on one colour, the panel and tool options windows, the tool bar on the right, and the readouts at the bottom.</figcaption></figure>
+<ul>
+<li><b>The round red logo</b> at the top left folds the menu bar. Click it and the bar shrinks to just the logo, giving the map the whole top edge; click it again and the bar opens as it was. The choice is remembered.</li>
+<li><b>Windows.</b> The panel (Layers, Tiles, Props) and the tool options are windows. Drag a title bar to move one, drag an edge or a corner to resize it, press the <em>fold</em> button (or double-click the title bar) to roll it up, and the <em>close</em> button to hide it. The <b>View</b> menu lists every window, so a closed one always has a way back; <em>Reset window positions</em> puts everything where it started. Places and sizes are remembered between sessions.</li>
+<li><b>Pop out.</b> The <em>pop out</em> button on the panel and at the top of the tool bar turns that part into a real window of its own, which you can drag onto a second monitor and size freely. Double-click its title bar to dock it again. The tool options window stays inside the editor; drag any of its edges or corners to make it wider, narrower, taller or shorter. Everything keeps working there: tabs, menus, tool tips and keyboard shortcuts. Close the pop-out window, or press its dock button, to bring the part back into the editor. A window left popped out opens again where it was the next time you start the editor.</li>
+<li><b>The tool bar</b> is the slim console on the right. Hover a key for its name, its shortcut and what it does. The three small lamps at the bottom show the current colour of the Base, Vegetation and Zombie spawn maps.</li>
+<li><b>The colour rail</b> runs down the left edge in its own frame. Hover a colour for its name, its RGB value (for the spawn map, its density as <em>Grey N of 255</em>) and the tile or tiles it places; click to choose it. The keys <kbd>1</kbd> to <kbd>9</kbd> still pick the first nine.</li>
+<li><b>Readouts.</b> The cell coordinates and the zoom (with minus, plus and Fit) are small movable readouts: drag them by their grip. Show or hide them from the View menu.</li>
+<li><b>The wheel.</b> Press <kbd>W</kbd> (or choose Wheel in the View menu) for a ring of shortcuts at the pointer: the panel tabs, 3D view, Fit, Grid, Undo and Redo, and the three maps in the middle.</li>
+<li><b>Layers</b> each have a bin button, and there is a <em>Delete layer</em> button under the list. A map always keeps at least one layer, and a deleted layer comes back with <kbd>Ctrl</kbd>+<kbd>Z</kbd>.</li>
+</ul>
+
+<h3>Tools</h3>
+<p>The map fills the whole window, and everything else floats over it. The <b>panel window</b> has three tabs: <b>Layers</b> (Maps, Layers and Colours as foldable groups), <b>Tiles</b> (the tile library, with Open Tile Manager) and <b>Props</b> (Buildings and Props). The <b>tool options window</b> holds the settings of the chosen tool and, at its far right, the estimated export size. The <b>tool bar</b> is the slim console of keys on the right, the <b>colour rail</b> runs down the left edge, and the <b>cell coordinates</b> and <b>zoom</b> readouts sit at the bottom. Choosing Buildings or Props opens the panel on the Props tab and any painting tool switches back. The <b>Export</b> button at the top right opens the mod export. Fit leaves the map clear of the colour rail and the tool bar. See <a href="#ring">The Ring layout</a> for moving, resizing and popping out the windows.</p>
+<p>The painting tools. The same tools are the keys of the tool bar on the right; hover a key for its name, its shortcut and what it does. The settings for the chosen tool, such as size and density, are in the tool options window.</p>
+<div class="tbl"><table>
+<tr><th>Tool</th><th>Key</th><th>What it does</th></tr>
+<tr><td><strong>Brush</strong></td><td><kbd>B</kbd></td><td>Paints with the current colour.</td></tr>
+<tr><td><strong>Eraser</strong></td><td><kbd>E</kbd></td><td>Removes colour from the active map only (it sets the tile to empty).</td></tr>
+<tr><td><strong>Forest spray</strong></td><td><kbd>T</kbd></td><td>Sprays single pixels of the current colour.</td></tr>
+<tr><td><strong>Natural</strong></td><td><kbd>N</kbd></td><td>Paint an area and release: the area is filled with organic patches instead of a solid block.</td></tr>
+<tr><td><strong>Line</strong></td><td><kbd>L</kbd></td><td>Drag to draw a straight line the width of the brush size.</td></tr>
+<tr><td><strong>Rectangle</strong></td><td><kbd>R</kbd></td><td>Drag to draw a rectangle.</td></tr>
+<tr><td><strong>Ellipse</strong></td><td><kbd>O</kbd></td><td>Drag to draw an ellipse or circle.</td></tr>
+<tr><td><strong>Polygon</strong></td><td><kbd>P</kbd></td><td>Click to add corners.</td></tr>
+<tr><td><strong>Road</strong></td><td><kbd>D</kbd></td><td>Click to place the points of a road.</td></tr>
+<tr><td><strong>Flood fill</strong></td><td><kbd>F</kbd></td><td>Click to fill the connected area of the same colour on the active map.</td></tr>
+<tr><td><strong>Replace colour</strong></td><td><kbd>X</kbd></td><td>Click a pixel to swap every pixel of that colour on the whole active map for the current colour.</td></tr>
+<tr><td><strong>Colour picker</strong></td><td><kbd>I</kbd></td><td>Click to take the colour from the map.</td></tr>
+<tr><td><strong>Cell select</strong></td><td><kbd>C</kbd></td><td>Click or drag to select whole 256 by 256 cells.</td></tr>
+<tr><td><strong>Buildings</strong></td><td><kbd>U</kbd></td><td>Opens the Buildings panel on the right: choose a building, then click the map to place it.</td></tr>
+<tr><td><strong>Props</strong></td><td><kbd>K</kbd></td><td>Opens the Props panel on the right: choose a prop or tile, then use its tools (Place, Line, Fill area, Scatter, Replace, Pick, Remove, Hide tile).</td></tr>
+<tr><td><strong>Pan</strong></td><td><kbd>H</kbd></td><td>Drag to move the view.</td></tr>
+</table></div>
+
+<h3>Brush</h3>
+<p>The shape of the brush stamp, in three groups: <em>Basic</em> (square, round, diamond and similar), <em>Patterns</em> (dither, hatch, brick, waves and others) and <em>Organic</em> (blotches, fuzzy edges and scattered trees). The pattern can also be picked in the bar under the menus.</p>
+
+<h3>Options</h3>
+<p>A small panel with the <em>Performance</em> level and the memory limit of the desktop app.</p>
+
+<h3 id="placeoverlay">Place Overlay</h3>
+<p>The <b>Place Overlay</b> switch in the top bar (also in <em>View</em>) draws the annotation map over the map you are painting: names of towns and landmarks, roads, rivers and creeks with their names, lakes, zones as coloured boxes, and spawn points as blue dots. It only helps you see where things are while you paint. It never changes the map, and painting works as usual underneath. Names come from the <a href="#ingame">Annotation map creator</a>; with none placed yet the switch says so. This is a first version.</p>
+<h3>Annotation map creator</h3>
+<p>A tab that opens the <a href="#ingame">Annotation map creator</a> in its own window, for names on the in-game map, player spawn points and zones. Shortcut <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>.</p>
+
+<h3>3D building editor</h3>
+<p>A tab that opens the <a href="#building">3D building editor</a> in its own window. Shortcut <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>.</p>
+
+<h3>Help</h3>
+<p>This documentation (<kbd>F1</kbd>), the list of keyboard shortcuts and About.</p>
+
+<h2 id="maps">Maps</h2>
+<p>A Project Zomboid map is made from three images that share a name:</p>
+<div class="tbl"><table>
+<tr><th>Map</th><th>File name</th><th>What it does</th><th>Scale</th></tr>
+<tr><td><strong>Base map</strong></td><td><code>name.bmp</code></td><td>The ground: grass, dirt, sand, water, roads, paving and rocks.</td><td>1 pixel = 1 tile</td></tr>
+<tr><td><strong>Vegetation map</strong></td><td><code>name_veg.bmp</code></td><td>What grows on the ground: trees, bushes, flowers, ferns, boulders, crops and litter.</td><td>1 pixel = 1 tile</td></tr>
+<tr><td><strong>Zombie spawn map</strong></td><td><code>name_ZombieSpawnMap.bmp</code></td><td>How many zombies spawn in each area, as a greyscale image. Black is none, white is the most.</td><td>Smaller than the other two, see below</td></tr>
+</table></div>
+<p>The tabs at the top of the right panel switch between them, and the colours below them belong to the chosen map. Each map has its own layers. Undo is shared between the maps, so <kbd>Ctrl</kbd>+<kbd>Z</kbd> always reverses the last action, on whichever map it was made.</p>
+<h3>The zombie spawn map scale</h3>
+<p>The spawn map is painted in square blocks of 8 by 8 tiles, which is the size the game uses: it keeps one zombie value per 8 by 8 chunk, and the lot files written by the mod export take one value per chunk. The exported <code>_ZombieSpawnMap.bmp</code> for WorldEd has one pixel per block. The block size is fixed at 8 (older projects that were saved with another size keep it).</p>
+
+<h2 id="colours">Colour reference</h2>
+<p>Every colour is an exact RGB value from <code>Rules.txt</code>. The editor never blends or antialiases, so the exported images contain only these colours. A colour can be renamed or given another RGB value below the colour list in the right panel; change an RGB value only when <code>Rules.txt</code> uses the same colour, because it changes what is exported.</p>
+<h3 id="rulesets">Rule sets: Vanilla and your own colours</h3>
+<p>A <code>Rules.txt</code> can hold more than one set of colours. The editor splits it into <strong>Vanilla</strong> and one or more named sets, and shows one set at a time in the colour strip on the far left and in the Colours panel. When there is more than one set, a flip button sits above the strip (and in the Colours panel): <em>Turn page</em> shows the next set, for both the base map and vegetation. A set is made in either of two ways:</p>
+<ul>
+<li><strong>A comment line.</strong> A line such as <code>// ===== MY SET =====</code> (or one starting with <code>#</code>) starts a set called <em>MY SET</em>. It runs until the next such line. A line named <code>Vanilla</code> goes back to Vanilla.</li>
+<li><strong>The label.</strong> If the file has no such lines, every rule whose label starts with <em>Umbra</em> (for example <em>Umbra Swamp Light</em>) goes in the Umbra set.</li>
+</ul>
+<p>All the sets share one palette, so the map, the exported images and <code>Rules.txt</code> are the same as before; only the lists you pick from change. Import a <code>Rules.txt</code> from the Tile Manager with <em>Import Rules.txt</em>.</p>
+<p>Turning the page changes only which colours you can pick from. Colours already painted stay as they are, and each set's colours keep their own RGB values.</p>
+<h3>Base map colours</h3>
+<div class="tbl"><table>
+<tr><th>Colour</th><th>RGB</th><th>What it is</th></tr>
+<tr><td><i class="sw" style="background:rgb(0,0,0)" aria-hidden="true"></i><strong>Empty</strong></td><td class="num">0 0 0</td><td>Nothing is placed. Used for tiles that are not part of the map. It is stored as black.</td></tr>
+<tr><td><i class="sw" style="background:rgb(90,100,35)" aria-hidden="true"></i><strong>Dark Grass</strong></td><td class="num">90 100 35</td><td>Ground grass, darkest shade. The vegetation colours marked &quot;needs grass&quot; check for this colour, the medium one or the light one underneath.</td></tr>
+<tr><td><i class="sw" style="background:rgb(117,117,47)" aria-hidden="true"></i><strong>Medium Grass</strong></td><td class="num">117 117 47</td><td>Ground grass, middle shade.</td></tr>
+<tr><td><i class="sw" style="background:rgb(145,135,60)" aria-hidden="true"></i><strong>Light Grass</strong></td><td class="num">145 135 60</td><td>Ground grass, lightest shade.</td></tr>
+<tr><td><i class="sw" style="background:rgb(80,55,20)" aria-hidden="true"></i><strong>Dirt Grass</strong></td><td class="num">80 55 20</td><td>Ground that mixes dirt and grass.</td></tr>
+<tr><td><i class="sw" style="background:rgb(120,70,20)" aria-hidden="true"></i><strong>Dirt</strong></td><td class="num">120 70 20</td><td>Bare dirt ground.</td></tr>
+<tr><td><i class="sw" style="background:rgb(110,80,60)" aria-hidden="true"></i><strong>Clay</strong></td><td class="num">110 80 60</td><td>Clay ground.</td></tr>
+<tr><td><i class="sw" style="background:rgb(210,200,160)" aria-hidden="true"></i><strong>Sand</strong></td><td class="num">210 200 160</td><td>Sand ground.</td></tr>
+<tr><td><i class="sw" style="background:rgb(0,138,255)" aria-hidden="true"></i><strong>Water</strong></td><td class="num">0 138 255</td><td>Water tiles, for the sea, rivers and lakes.</td></tr>
+<tr><td><i class="sw" style="background:rgb(100,100,100)" aria-hidden="true"></i><strong>Dark Asphalt (main roads)</strong></td><td class="num">100 100 100</td><td>The main road surface, labelled &quot;main roads&quot; in Rules.txt.</td></tr>
+<tr><td><i class="sw" style="background:rgb(120,120,120)" aria-hidden="true"></i><strong>Medium Asphalt</strong></td><td class="num">120 120 120</td><td>Medium asphalt road surface, a lighter grey than the main road.</td></tr>
+<tr><td><i class="sw" style="background:rgb(165,160,140)" aria-hidden="true"></i><strong>Light Asphalt</strong></td><td class="num">165 160 140</td><td>Light road surface (the lightgravel alias).</td></tr>
+<tr><td><i class="sw" style="background:rgb(150,150,150)" aria-hidden="true"></i><strong>Smooth Asphalt</strong></td><td class="num">150 150 150</td><td>Smooth, light grey asphalt.</td></tr>
+<tr><td><i class="sw" style="background:rgb(80,80,80)" aria-hidden="true"></i><strong>Gravel Asphalt</strong></td><td class="num">80 80 80</td><td>Dark asphalt with a gravel look.</td></tr>
+<tr><td><i class="sw" style="background:rgb(110,100,100)" aria-hidden="true"></i><strong>Dark Pothole</strong></td><td class="num">110 100 100</td><td>Dark asphalt with potholes.</td></tr>
+<tr><td><i class="sw" style="background:rgb(130,120,120)" aria-hidden="true"></i><strong>Light Pothole</strong></td><td class="num">130 120 120</td><td>Light asphalt with potholes.</td></tr>
+<tr><td><i class="sw" style="background:rgb(170,160,130)" aria-hidden="true"></i><strong>Paving Stone 1</strong></td><td class="num">170 160 130</td><td>Paving stone floor, variant 1 of 8 (floors_exterior_tilesandstone_01, tile 0).</td></tr>
+<tr><td><i class="sw" style="background:rgb(120,80,80)" aria-hidden="true"></i><strong>Paving Stone 2</strong></td><td class="num">120 80 80</td><td>Paving stone floor, variant 2 of 8 (floors_exterior_tilesandstone_01, tile 1).</td></tr>
+<tr><td><i class="sw" style="background:rgb(120,70,60)" aria-hidden="true"></i><strong>Paving Stone 3</strong></td><td class="num">120 70 60</td><td>Paving stone floor, variant 3 of 8 (floors_exterior_tilesandstone_01, tile 2).</td></tr>
+<tr><td><i class="sw" style="background:rgb(190,180,180)" aria-hidden="true"></i><strong>Paving Stone 4</strong></td><td class="num">190 180 180</td><td>Paving stone floor, variant 4 of 8 (floors_exterior_tilesandstone_01, tile 3).</td></tr>
+<tr><td><i class="sw" style="background:rgb(160,150,150)" aria-hidden="true"></i><strong>Paving Stone 5</strong></td><td class="num">160 150 150</td><td>Paving stone floor, variant 5 of 8 (floors_exterior_tilesandstone_01, tile 4).</td></tr>
+<tr><td><i class="sw" style="background:rgb(130,120,100)" aria-hidden="true"></i><strong>Paving Stone 6</strong></td><td class="num">130 120 100</td><td>Paving stone floor, variant 6 of 8 (floors_exterior_tilesandstone_01, tile 5).</td></tr>
+<tr><td><i class="sw" style="background:rgb(110,70,70)" aria-hidden="true"></i><strong>Paving Stone 7</strong></td><td class="num">110 70 70</td><td>Paving stone floor, variant 7 of 8 (floors_exterior_tilesandstone_01, tile 6).</td></tr>
+<tr><td><i class="sw" style="background:rgb(120,110,110)" aria-hidden="true"></i><strong>Paving Stone 8</strong></td><td class="num">120 110 110</td><td>Paving stone floor, variant 8 of 8 (floors_exterior_tilesandstone_01, tile 7).</td></tr>
+<tr><td><i class="sw" style="background:rgb(120,100,75)" aria-hidden="true"></i><strong>Vertical Dirt</strong></td><td class="num">120 100 75</td><td>Dirt path running north to south.</td></tr>
+<tr><td><i class="sw" style="background:rgb(120,110,95)" aria-hidden="true"></i><strong>Horizontal Dirt</strong></td><td class="num">120 110 95</td><td>Dirt path running east to west.</td></tr>
+<tr><td><i class="sw" style="background:rgb(10,0,0)" aria-hidden="true"></i><strong>Scorched Earth</strong></td><td class="num">10 0 0</td><td>One black burnt-ground tile, for burnt areas.</td></tr>
+<tr><td><i class="sw" style="background:rgb(80,20,0)" aria-hidden="true"></i><strong>Charred Earth</strong></td><td class="num">80 20 0</td><td>Burnt ground, a mix of charred tiles.</td></tr>
+<tr><td><i class="sw" style="background:rgb(140,70,15)" aria-hidden="true"></i><strong>Gravel Dirt</strong></td><td class="num">140 70 15</td><td>Gravel over dirt.</td></tr>
+<tr><td><i class="sw" style="background:rgb(110,100,60)" aria-hidden="true"></i><strong>Rockssmall</strong></td><td class="num">110 100 60</td><td>Ground with small rocks.</td></tr>
+<tr><td><i class="sw" style="background:rgb(130,120,80)" aria-hidden="true"></i><strong>Rocksmedium</strong></td><td class="num">130 120 80</td><td>Ground with medium rocks.</td></tr>
+<tr><td><i class="sw" style="background:rgb(150,135,90)" aria-hidden="true"></i><strong>Rockslarge</strong></td><td class="num">150 135 90</td><td>Ground with large rocks.</td></tr>
+</table></div>
+<h3>Vegetation colours</h3>
+<p>The last column shows how each colour splits its tiles between kinds of plant, for example <em>80% trees, 20% grass</em>. WorldEd picks one of the colour's tiles at random for every pixel, so a colour with many tiles in it is a mix.</p>
+<div class="callout"><strong>Needs grass.</strong> Colours tagged <span class="tag">needs grass</span> include a grass overlay tile. <code>Rules.txt</code> holds a version of each for the three grass base colours, and WorldEd picks the right one from the base map under the pixel:
+<ul><li>Dark Grass <code>90 100 35</code></li><li>Medium Grass <code>117 117 47</code></li><li>Light Grass <code>145 135 60</code></li></ul>
+On any other base colour such a vegetation pixel places nothing. If a forest does not appear, the base map under it should be checked.</div>
+<div class="tbl"><table>
+<tr><th>Colour</th><th>RGB</th><th>What it is</th><th>Tile mix</th></tr>
+<tr><td><i class="sw" style="background:rgb(0,0,0)" aria-hidden="true"></i><strong>Empty</strong></td><td class="num">0 0 0</td><td>Nothing is placed.</td><td class="tiles">&ndash;</td></tr>
+<tr><td><i class="sw" style="background:rgb(255,0,0)" aria-hidden="true"></i><strong>Trees</strong></td><td class="num">255 0 0</td><td>A tree on every tile. Each pixel gets one of four tree tiles from vegetation_trees_01 (tiles 8 to 11), chosen at random.</td><td class="tiles">100% trees</td></tr>
+<tr><td><i class="sw" style="background:rgb(200,0,0)" aria-hidden="true"></i><strong>Dense Trees + Grass</strong> <span class=tag>needs grass</span></td><td class="num">200 0 0</td><td>A thick forest with long grass between the trees. Needs one of the three grass base colours.</td><td class="tiles">80% trees, 20% grass</td></tr>
+<tr><td><i class="sw" style="background:rgb(127,0,0)" aria-hidden="true"></i><strong>Moderate Trees + Grass</strong> <span class=tag>needs grass</span></td><td class="num">127 0 0</td><td>A forest with gaps and long grass. Needs grass underneath.</td><td class="tiles">50% trees, 50% grass</td></tr>
+<tr><td><i class="sw" style="background:rgb(64,0,0)" aria-hidden="true"></i><strong>Sparse Trees + Grass</strong> <span class=tag>needs grass</span></td><td class="num">64 0 0</td><td>Scattered trees in grass. Needs grass underneath.</td><td class="tiles">62% grass, 21% other, 17% trees</td></tr>
+<tr><td><i class="sw" style="background:rgb(0,255,0)" aria-hidden="true"></i><strong>Long grass</strong> <span class=tag>needs grass</span></td><td class="num">0 255 0</td><td>Long grass overlay only. Needs grass underneath.</td><td class="tiles">64% grass, 36% other</td></tr>
+<tr><td><i class="sw" style="background:rgb(250,0,160)" aria-hidden="true"></i><strong>Bushes</strong></td><td class="num">250 0 160</td><td>Bushes on every tile.</td><td class="tiles">100% bushes</td></tr>
+<tr><td><i class="sw" style="background:rgb(250,0,200)" aria-hidden="true"></i><strong>Bushes + Trees</strong></td><td class="num">250 0 200</td><td>A mix of bushes and trees.</td><td class="tiles">64% bushes, 36% trees</td></tr>
+<tr><td><i class="sw" style="background:rgb(255,0,255)" aria-hidden="true"></i><strong>Bushes, Grass, Few Trees</strong> <span class=tag>needs grass</span></td><td class="num">255 0 255</td><td>Mostly bushes and long grass, with a few trees. Needs grass underneath.</td><td class="tiles">47% bushes, 27% trees, 27% grass</td></tr>
+<tr><td><i class="sw" style="background:rgb(200,0,200)" aria-hidden="true"></i><strong>Dense Bushes + Grass</strong> <span class=tag>needs grass</span></td><td class="num">200 0 200</td><td>A thick bush cover with grass. Needs grass underneath.</td><td class="tiles">57% bushes, 43% grass</td></tr>
+<tr><td><i class="sw" style="background:rgb(100,0,200)" aria-hidden="true"></i><strong>Sparse Bushes + Grass</strong> <span class=tag>needs grass</span></td><td class="num">100 0 200</td><td>A few bushes in grass. Needs grass underneath.</td><td class="tiles">63% grass, 37% bushes</td></tr>
+<tr><td><i class="sw" style="background:rgb(70,0,200)" aria-hidden="true"></i><strong>Ferns</strong></td><td class="num">70 0 200</td><td>Ferns on every tile.</td><td class="tiles">100% ferns</td></tr>
+<tr><td><i class="sw" style="background:rgb(200,100,200)" aria-hidden="true"></i><strong>Flowers</strong></td><td class="num">200 100 200</td><td>Flowers on every tile.</td><td class="tiles">100% flowers</td></tr>
+<tr><td><i class="sw" style="background:rgb(160,80,160)" aria-hidden="true"></i><strong>Flowers + Grass</strong> <span class=tag>needs grass</span></td><td class="num">160 80 160</td><td>Meadow: flowers mixed with grass. Needs grass underneath.</td><td class="tiles">64% flowers, 36% grass</td></tr>
+<tr><td><i class="sw" style="background:rgb(0,150,120)" aria-hidden="true"></i><strong>Dense Shoreline</strong></td><td class="num">0 150 120</td><td>Thick cover of shore plants, for the edge of water.</td><td class="tiles">75% bushes, 25% shore plants</td></tr>
+<tr><td><i class="sw" style="background:rgb(0,180,160)" aria-hidden="true"></i><strong>Moderate Shoreline</strong></td><td class="num">0 180 160</td><td>Medium cover of shore plants.</td><td class="tiles">75% shore plants, 19% other, 6% boulders</td></tr>
+<tr><td><i class="sw" style="background:rgb(0,250,230)" aria-hidden="true"></i><strong>Sparse Shoreline</strong></td><td class="num">0 250 230</td><td>A few shore plants.</td><td class="tiles">96% shore plants, 4% boulders</td></tr>
+<tr><td><i class="sw" style="background:rgb(140,160,140)" aria-hidden="true"></i><strong>Boulders</strong></td><td class="num">140 160 140</td><td>Boulders.</td><td class="tiles">100% boulders</td></tr>
+<tr><td><i class="sw" style="background:rgb(100,120,100)" aria-hidden="true"></i><strong>Boulders (walkable)</strong></td><td class="num">100 120 100</td><td>Boulders, the walkable variety.</td><td class="tiles">100% boulders</td></tr>
+<tr><td><i class="sw" style="background:rgb(90,100,90)" aria-hidden="true"></i><strong>Boulders (driveable)</strong></td><td class="num">90 100 90</td><td>Boulders, the driveable variety.</td><td class="tiles">100% boulders</td></tr>
+<tr><td><i class="sw" style="background:rgb(255,128,0)" aria-hidden="true"></i><strong>Farm Corn 1 (dead)</strong></td><td class="num">255 128 0</td><td></td><td class="tiles">100% corn</td></tr>
+<tr><td><i class="sw" style="background:rgb(220,100,0)" aria-hidden="true"></i><strong>Farm Corn 2 (dead)</strong></td><td class="num">220 100 0</td><td></td><td class="tiles">100% corn</td></tr>
+<tr><td><i class="sw" style="background:rgb(50,10,0)" aria-hidden="true"></i><strong>Burned Trees</strong></td><td class="num">50 10 0</td><td>Burnt tree trunks, for burnt forest.</td><td class="tiles">100% trees</td></tr>
+<tr><td><i class="sw" style="background:rgb(40,40,40)" aria-hidden="true"></i><strong>Trash</strong></td><td class="num">40 40 40</td><td>Litter on the ground.</td><td class="tiles">100% litter</td></tr>
+<tr><td><i class="sw" style="background:rgb(50,50,40)" aria-hidden="true"></i><strong>Road Crack</strong></td><td class="num">50 50 40</td><td>Cracks on road surfaces. Place over asphalt.</td><td class="tiles">100% cracks</td></tr>
+<tr><td><i class="sw" style="background:rgb(0,250,0)" aria-hidden="true"></i><strong>Short grass</strong> <span class=tag>needs grass</span></td><td class="num">0 250 0</td><td>Short grass overlay. Needs grass underneath.</td><td class="tiles">100% grass</td></tr>
+<tr><td><i class="sw" style="background:rgb(0,128,0)" aria-hidden="true"></i><strong>Grass + Few Trees</strong> <span class=tag>needs grass</span></td><td class="num">0 128 0</td><td>Grass with the odd tree. Needs grass underneath.</td><td class="tiles">62% grass, 21% other, 17% trees</td></tr>
+<tr><td><i class="sw" style="background:rgb(150,0,200)" aria-hidden="true"></i><strong>Bushes + Grass</strong> <span class=tag>needs grass</span></td><td class="num">150 0 200</td><td>Bushes with grass. Needs grass underneath.</td><td class="tiles">58% bushes, 42% grass</td></tr>
+<tr><td><i class="sw" style="background:rgb(80,20,0)" aria-hidden="true"></i><strong>Burned Trees + Grass</strong> <span class=tag>needs grass</span></td><td class="num">80 20 0</td><td>Burnt trees with grass. Needs grass underneath.</td><td class="tiles">50% trees, 50% grass</td></tr>
+</table></div>
+<h3>Zombie spawn levels</h3>
+<div class="tbl"><table>
+<tr><th>Level</th><th>RGB</th><th>Meaning</th></tr>
+<tr><td><i class="sw" style="background:rgb(0,0,0)" aria-hidden="true"></i><strong>None (black)</strong></td><td class="num">0 0 0</td><td>No zombies are placed.</td></tr>
+<tr><td><i class="sw" style="background:rgb(32,32,32)" aria-hidden="true"></i><strong>Level 1 (fewest)</strong></td><td class="num">32 32 32</td><td>The fewest zombies.</td></tr>
+<tr><td><i class="sw" style="background:rgb(64,64,64)" aria-hidden="true"></i><strong>Level 2</strong></td><td class="num">64 64 64</td><td></td></tr>
+<tr><td><i class="sw" style="background:rgb(96,96,96)" aria-hidden="true"></i><strong>Level 3</strong></td><td class="num">96 96 96</td><td></td></tr>
+<tr><td><i class="sw" style="background:rgb(128,128,128)" aria-hidden="true"></i><strong>Level 4</strong></td><td class="num">128 128 128</td><td></td></tr>
+<tr><td><i class="sw" style="background:rgb(160,160,160)" aria-hidden="true"></i><strong>Level 5</strong></td><td class="num">160 160 160</td><td></td></tr>
+<tr><td><i class="sw" style="background:rgb(192,192,192)" aria-hidden="true"></i><strong>Level 6</strong></td><td class="num">192 192 192</td><td></td></tr>
+<tr><td><i class="sw" style="background:rgb(224,224,224)" aria-hidden="true"></i><strong>Level 7</strong></td><td class="num">224 224 224</td><td></td></tr>
+<tr><td><i class="sw" style="background:rgb(255,255,255)" aria-hidden="true"></i><strong>Level 8 (most)</strong></td><td class="num">255 255 255</td><td>The most zombies.</td></tr>
+</table></div>
+<p>In the editor, the spawn map is shown as a warm heat colour so that it is easy to read. The exported image is plain grey.</p>
+
+<h2 id="layers">Layers and separate colours</h2>
+<p>Each map has layers, like a paint program. A separate layer keeps a road network apart from the terrain so that it can be hidden or locked. On export, the visible layers are merged: the top layer wins where layers overlap, and a hidden layer is left out of the export.</p>
+<h3>Rearranging and Layer tools</h3>
+<p>The top of the list is drawn on top. Drag a layer by the dotted handle on its left to move it; a green line shows where it will land. With the keyboard, focus the handle and press the Up or Down arrow key. Click the eye to hide a layer, the padlock to lock it, and double-click a name to rename it.</p>
+<p><strong>Layer tools</strong> opens a scrolling menu beside the panel. <em>Merge down</em> paints the layer into the one below it and removes it. <em>Solo this layer</em> hides every other layer of the map until you choose it again. Every layer tool can be undone with <kbd>Ctrl</kbd>+<kbd>Z</kbd>, including delete and merge.</p>
+<h3>Hide colours under placed objects</h3>
+<p>The tick box under the layer buttons, <em>Hide colours under placed objects</em>, leaves the active map's colours out under placed buildings and under props and tiles, so the object can be seen on its own. It is set for each map (Base map, Vegetation, Zombie spawn) and also lives in the Layers menu. It only changes what is shown in the 2D view. The colours stay in the map and in every export.</p>
+<p>The <strong>Separate colours into layers</strong> tick box works differently. It treats every colour of the active map as its own layer. For each colour:</p>
+<ul>
+<li><strong>Hide</strong> (eye button) shows what is underneath. Hiding a colour only changes the display. The export always contains every colour.</li>
+<li><strong>Lock</strong> (padlock) stops every tool from changing pixels of that colour.</li>
+<li><strong>Solo</strong>: Alt+click on the eye shows only that colour, and Alt+click again shows them all.</li>
+</ul>
+<p>The Colours panel stays available in this mode, so the colour to paint next can still be chosen from the whole palette, not only from the colours already in use. This is the quickest way to check every road, every forest or every water tile. <em>Layers &gt; Only list colours in use</em> keeps the list short.</p>
+<figure class=""><a href="img/separate.png" class="zoom"><img src="img/separate.png" alt="Separate colours into layers: every colour has its own eye and lock." loading="lazy"></a><figcaption>Separate colours into layers: every colour has its own eye and lock.</figcaption></figure>
+
+<h2 id="overlays">Overlays</h2>
+<p>One map is edited at a time, but the other maps can be drawn on top of it. Under the map tabs, the <strong>Overlay</strong> buttons switch each other map on or off, and <em>Opacity</em> sets how strongly it shows. The base map is on by default when vegetation or zombie spawn is edited, so that the ground under the drawing stays visible. Overlays are for display only; nothing is painted on them.</p>
+<figure class="small"><a href="img/overlay-on.png" class="zoom"><img src="img/overlay-on.png" alt="Vegetation with the base map overlaid." loading="lazy"></a><figcaption>Vegetation with the base map overlaid.</figcaption></figure><figure class="small"><a href="img/overlay-off.png" class="zoom"><img src="img/overlay-off.png" alt="The same map with the overlay off." loading="lazy"></a><figcaption>The same map with the overlay off.</figcaption></figure>
+
+<h2 id="files">Saving, importing, exporting</h2>
+<div class="tbl"><table>
+<tr><th>Action</th><th>What it does</th></tr>
+<tr><td><strong>Save project</strong> <kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>Saves everything (all maps, layers, palettes, settings and the in-game map names) in one <code>.pzmap</code> file. Large areas of a single colour are stored compactly, so projects stay small.</td></tr>
+<tr><td><strong>Open project</strong> <kbd>Ctrl</kbd>+<kbd>O</kbd></td><td>Opens a <code>.pzmap</code> project. Projects saved by the previous version of the editor open as well.</td></tr>
+<tr><td><strong>Import image</strong></td><td>Loads a PNG or BMP into the active map. Every pixel is matched to the nearest colour in the palette, so an exact map image imports without change.</td></tr>
+<tr><td><strong>Import Rules.txt</strong></td><td>In the <a href="#tiles">Tile Manager</a>, with <em>Choose .rar or file</em>. Replaces the colour lists with the colours in a <code>Rules.txt</code> file, and reads its tile names for the 3D view. This suits game versions that use other colours.</td></tr>
+<tr><td><strong>Export BMP (all maps)</strong></td><td>Writes <code>name.bmp</code>, <code>name_veg.bmp</code> and <code>name_ZombieSpawnMap.bmp</code>. BMP is the format for WorldEd. Empty spawn maps are skipped, and the editor reports it.</td></tr>
+<tr><td><strong>Export PNG (all maps)</strong></td><td>The same images as PNG, for sharing or editing elsewhere.</td></tr>
+<tr><td><strong>Export mod (Steam Workshop)</strong> <kbd>Ctrl</kbd>+<kbd>E</kbd></td><td>Writes the whole mod: the Build 42 mod folder, the Steam Workshop files and the BMP images for WorldEd. See <a href="#mod">Exporting a mod</a>.</td></tr>
+</table></div>
+<p>The name used in the file names is the <em>Map name</em> box at the top right of the window.</p>
+
+<h2 id="view3d">3D view</h2>
+<p>Pressing <kbd>V</kbd> or choosing <em>View &gt; 3D view</em> shows the map the way TileZed does: a 2:1 isometric view with tiles as diamonds on a grey background, a dotted tile grid and black cell borders. A window of cells is shown at a time and is edited live with the same tools, colours and undo as the 2D view. By default the window fits your map: a map of up to 36 cells (a 6 by 6 map, say) is shown whole, and a larger map shows 3 by 3 cells that you move around. <em>Window size</em> in the 3D panel sets it to 2 by 2 up to 6 by 6 cells instead.</p>
+<h3>The game tiles are recommended</h3>
+<p>The 3D view works without the game's tiles and draws simple stand-in pictures for anything missing. With the Build 42 tilesheets in the <a href="#tiles">Tile Manager</a> it shows the real tiles. Nothing is locked without them.</p>
+<figure class=""><a href="img/3d-iso.png" class="zoom"><img src="img/3d-iso.png" alt="The 3D view with the panel on the left. The small map shows which cells are open." loading="lazy"></a><figcaption>The 3D view with the panel on the left. The small map shows which cells are open.</figcaption></figure>
+<h3>Moving around</h3>
+<div class="tbl"><table>
+<tr><th>Action</th><th>Result</th></tr>
+<tr><td>Left button</td><td>Paint with the active tool.</td></tr>
+<tr><td>Middle button drag, or <kbd>Space</kbd> + drag</td><td>Pan.</td></tr>
+<tr><td>Mouse wheel</td><td>Scroll the view. (The panel can switch the wheel to zoom.)</td></tr>
+<tr><td><kbd>Ctrl</kbd> + wheel</td><td>Zoom toward the pointer.</td></tr>
+<tr><td>Arrow keys</td><td>Move the view.</td></tr>
+<tr><td><kbd>Home</kbd></td><td>Reset the view.</td></tr>
+<tr><td>Click on the small map in the panel</td><td>Move the window to that part of the map.</td></tr>
+<tr><td>The four arrow buttons</td><td>Move the window by one cell.</td></tr>
+<tr><td><kbd>Esc</kbd> or <kbd>V</kbd></td><td>Back to the 2D view.</td></tr>
+</table></div>
+<p>These tools work in 3D: Brush, Eraser, Forest spray, Natural, Flood fill, Replace colour and Colour picker. The shape tools and Cell select are 2D only. A translucent preview shows where the brush will paint.</p>
+<h3>Camera modes</h3>
+<p><strong>Isometric</strong> is the fixed TileZed camera. <strong>Free 3D</strong> is a perspective camera: the right button orbits, and <em>Top down</em> and <em>Low angle</em> are presets.</p>
+<figure class="small"><a href="img/3d-close.png" class="zoom"><img src="img/3d-close.png" alt="Close in, isometric." loading="lazy"></a><figcaption>Close in, isometric.</figcaption></figure><figure class="small"><a href="img/3d-free.png" class="zoom"><img src="img/3d-free.png" alt="Free 3D camera." loading="lazy"></a><figcaption>Free 3D camera.</figcaption></figure>
+<h3>Panel options</h3>
+<ul>
+<li><strong>Tile grid (dotted)</strong> and <strong>Cell borders</strong>.</li>
+<li><strong>Trees, bushes and rocks</strong> turns the objects from the vegetation map on or off. <strong>Object detail</strong> sets how many are drawn when no tile art is loaded.</li>
+<li><strong>Tile art (from the Tile Manager)</strong> uses the real game tiles that have been imported. See <a href="#tiles">Tile Manager and custom tiles</a>.</li>
+<li><strong>Vegetation colours on the ground</strong> paints the vegetation map colours over the ground.</li>
+<li><strong>Hide base map colours</strong> and <strong>Hide vegetation colours</strong> take those colours off the ground in the 3D view only, so just the tiles, trees and objects are left to look at. You can still paint, and the colour picker still reads the colour of what you click. The 2D view, the map and every export are unchanged.</li>
+<li><strong>Zombie spawn heat</strong> shows the spawn map as heat on the ground.</li>
+<li><strong>TileZed grey background</strong> and <strong>Mouse wheel zooms</strong>.</li>
+</ul>
+<div class="callout warn"><strong>Scope of the 3D view.</strong> It uses the same data as the 2D view, so what is painted is what is exported. Without tile art it draws simple stand-in pictures for trees, bushes and rocks. With tile art it uses the imported tiles, but it does not draw the blended edges where two ground types meet, and Project Zomboid ground is flat, so there is no height. It is a preview, not a replacement for checking the map in TileZed or in the game.</div>
+
+<h2 id="tiles">Tile Manager</h2>
+<p>The Tile Manager holds the game's tilesheets: the pictures the game builds the map from. The editor works without them, but the Build 42 tilesheets are recommended: with them the 3D view, the 3D building editor and the exported map look like the game. They only have to be added once.</p>
+
+<h3>Importing straight from your game</h3>
+<p>The quickest way is <em>Import from my Project Zomboid install</em>, at the top of the Tile Manager (it is also offered in the window that says tiles are missing, and as <em>Import from my game</em> in the <em>Props</em> panel). The desktop app looks for a Steam copy of Project Zomboid by itself, including Steam library folders on other drives. If it cannot find it, or in the browser, choose the game folder (the one that contains <code>media</code>). The editor reads the game's own tile files (<code>media/texturepacks</code>, the <code>2x</code> packs) on your computer, rebuilds the tilesheets from them and shows them in the usual review, sorted into building parts, props and terrain. Nothing is downloaded and no game files are changed or copied anywhere else. It leaves out sheets you already have, and signs and other sheets unless you tick <em>Also signs and other sheets</em>. The game's tile art belongs to The Indie Stone and is not included with the editor, so this step reads it from your own copy.</p>
+<h3>Adding the game tiles by hand</h3>
+<ol class="steps">
+<li><strong>Open Tile Manager.</strong> <em>File &gt; Tile Manager</em>, or <em>Open Tile Manager</em> in the window that says tiles are missing. You can also just drop files or a whole folder on the <em>Buildings</em> or <em>Props</em> panel, and the Tile Manager opens with them already read.</li>
+<li><strong>Add anything.</strong> Press <em>Choose RAR or ZIP</em>, <em>Add PNG sheets</em> or <em>Add a folder</em>, or drop files, archives or whole folders on the window. Tilesheets, TileZed catalogs, <code>.tiles</code> files, <code>Rules.txt</code>, and finished buildings (<code>.tbx</code> or <code>.pzbld</code>) can all be in the same selection. A RAR of up to 2 GB works. A ZIP can be any size: only the files that are used are unpacked.</li>
+<li><strong>Review.</strong> The Tile Manager checks every file and sorts it (see below). Press <em>Import</em>. Anything that cannot be used is shown with the reason and is left out.</li>
+</ol>
+<h3>What the Tile Manager detects</h3>
+<p>Each file is recognised by what it is and goes where it is used:</p>
+<div class="tbl"><table>
+<tr><th>It finds</th><th>It is</th><th>It goes to</th></tr>
+<tr><td>A <code>.tbx</code> or <code>.pzbld</code> file (a <code>Name_basement.tbx</code> next to <code>Name.tbx</code> is joined to it)</td><td>A complete building</td><td>The <em>Buildings</em> panel and the Buildings folder</td></tr>
+<tr><td>A sheet named <code>furniture_</code>, <code>appliances_</code>, <code>lighting_</code>, <code>location_</code>, <code>trash_</code>, <code>decorations_</code>, <code>fixtures_</code> (other than doors, windows and stairs) and similar</td><td>Props</td><td>The group <em>Props</em>, browsable in the <em>Props</em> panel under <em>Tilesheets</em></td></tr>
+<tr><td>A sheet named <code>walls_</code>, <code>floors_</code>, <code>roofs_</code>, <code>fixtures_doors</code>, <code>fixtures_windows</code>, <code>fixtures_stairs</code>, <code>carpentry_02</code></td><td>Building parts</td><td>The group <em>Building parts</em>, which the 3D building editor reads its walls, floors, roofs, doors and windows from</td></tr>
+<tr><td>A sheet named <code>blends_</code>, <code>vegetation_</code> and similar</td><td>Terrain</td><td>The group <em>Terrain</em></td></tr>
+<tr><td><code>BuildingFurniture.txt</code></td><td>The furniture list (props)</td><td>The <em>Props</em> panel's game furniture list</td></tr>
+<tr><td><code>BuildingTiles.txt</code>, <code>BuildingTemplates.txt</code></td><td>Building parts</td><td>The 3D building editor</td></tr>
+<tr><td><code>.tiles</code> files, <code>Tilesets.txt</code>, <code>Rules.txt</code>, <code>Blends.txt</code></td><td>Game data</td><td>The tiles folder</td></tr>
+</table></div>
+<p><strong>Categories.</strong> Inside those groups every sheet has a category taken from the game's own sheet names: for example <em>Exterior walls</em>, <em>Interior walls</em>, <em>Floors</em>, <em>Roofs</em>, <em>Doors</em>, <em>Windows</em>, <em>Stairs</em> under building parts, <em>Furniture</em>, <em>Appliances</em>, <em>Lighting</em>, <em>Shops and places</em>, <em>Rubbish</em>, <em>Fencing</em> under props, and <em>Vegetation</em>, <em>Ground blends</em>, <em>Road markings</em> under terrain. The <em>Props</em> panel's <em>Tilesheets</em> list shows them as Group, then Category, then Sheet, and every level opens and closes (<em>Expand all</em> and <em>Collapse all</em> do the lot). A sheet the editor does not recognise goes to <em>Other sheets</em>.</p>
+<p>A selection can hold several of these at once, for example a house together with its furniture and wall sheets: the review lists them in sections (<em>Complete buildings</em>, <em>Props</em>, <em>Building parts</em>, <em>Terrain</em>, <em>Other tilesheets</em>), each of which can be collapsed, and the result message says how many of each were added. The filter above the list can show one kind only.</p>
+<p><strong>Everything in a RAR or ZIP goes to its place.</strong> The pictures go to the review and then <code>sheets</code>. <code>Rules.txt</code>, <code>Blends.txt</code> and <code>Tilesets.txt</code> go into the tiles folder, TileZed's <code>Building*.txt</code> catalogs into <code>catalogs</code>, and the game's <code>.tiles</code> files into <code>tiledefs</code>. Other files are ignored. A ZIP can be in any folder layout and must not be password protected. A RAR must be RAR 5 (or RAR 4 without compression), not encrypted, and not split into volumes. <em>Add PNG sheets</em>, <em>Add a folder</em> and <em>Add custom tiles</em> are under the RAR button for single files.</p>
+<p><strong>Choosing many files at once.</strong> In the review, <em>Select all</em>, <em>Select none</em>, <em>Invert</em> and <em>Only those that look fine</em> tick the files for you (files that cannot be imported are never ticked). Hold <kbd>Shift</kbd> and click a second tick box to tick everything between. The filter above the list can show only the files that look fine, need a look, cannot be imported or have a name that is already used. <em>Set group</em> names the group of every ticked file, and <em>Name already used</em> lets you skip, replace or keep both for all of those files in one go. The Import button stays at the bottom of the window while you scroll. After an import the new sheets are ticked in the Tilesheets list, so you can move them to a group or remove them together.</p>
+<p><strong>Working with several sheets.</strong> Each sheet in the list has a tick box, with <em>Select all</em> (only the sheets the search shows), <em>Select none</em>, <em>Invert</em> and a <em>Select group</em> button on each group. <em>Move</em> puts the ticked sheets in a group and <em>Remove ticked</em> removes them after a confirmation; each is one step for <em>Undo</em>.</p>
+<p><strong>Rules.txt</strong> can also be imported alone: choose it with <em>Choose .rar or file</em> (or drop it on the window) and it replaces the base and vegetation colours as well as filing its tile names. If it holds a second set of colours, see <a href="#rulesets">Rule sets</a>.</p>
+
+<h3>Adding files by hand (the tiles folder)</h3>
+<p>The Tile Manager does the sorting for you, so this is only needed for very large collections or automated set-ups. In the desktop app the tiles are kept as ordinary files in a <code>tiles</code> folder next to <code>Umbra Editor.exe</code>; it can be backed up or copied to another PC. Copy files into the folders below, keeping the game's file names (the name of the file is the name of the sheet). The folder is read again each time the Tile Manager opens and when the editor starts, and sheets copied in that way are grouped by the same detection as an import.</p>
+<div class="tbl"><table>
+<tr><th>Folder</th><th>What goes in it</th></tr>
+<tr><td><code>sheets</code></td><td>The game's tilesheets (PNG or WebP). A sub-folder becomes a group.</td></tr>
+<tr><td><code>catalogs</code></td><td>TileZed's <code>BuildingTiles.txt</code>, <code>BuildingTemplates.txt</code> and <code>BuildingFurniture.txt</code>, for the 3D building editor and the <em>Props</em> panel.</td></tr>
+<tr><td><code>tiledefs</code></td><td>The game's tile definitions, such as <code>newtiledefinitions.tiles</code> from the game's <code>media</code> folder. The lot files use them to mark solid and water squares.</td></tr>
+<tr><td><code>Tilesets.txt</code></td><td>The game's <code>Tilesets.txt</code> (room and furniture meta data), included with the editor. Replace it with a newer one if needed. It gives the door, seat, bed and light-switch objects in rooms and the room names of furniture.</td></tr>
+<tr><td><code>dressing.txt</code></td><td>Optional. The tile choices for clutter and decay, as a text file you can edit.</td></tr>
+<tr><td><code>Blends.txt</code></td><td>TileZed's <code>Blends.txt</code>, next to <code>Rules.txt</code>. With it the lot files get the soft edges between ground types that WorldEd adds.</td></tr>
+</table></div>
+<p>Finished buildings are not kept in the tiles folder: they live in the <code>Buildings</code> folder of the <code>Umbra Editor</code> folder in your Documents (the same folder the 3D building editor saves to). A <code>.pzbld</code> or <code>.tbx</code> file copied there shows up in the <em>Buildings</em> panel after <em>Refresh</em>.</p>
+
+<h3>The sheets the editor needs</h3>
+<p>With the built-in <code>Rules.txt</code> these are:</p>
+<ul class="cols"><li><code>blends_natural_01</code> <span class="muted">(grass, dirt, sand and clay ground and their edges)</span></li><li><code>blends_natural_02</code> <span class="muted">(water)</span></li><li><code>blends_street_01</code> <span class="muted">(roads)</span></li><li><code>blends_grassoverlays_01</code> <span class="muted">(long, medium and short grass)</span></li><li><code>floors_exterior_natural_01</code> <span class="muted">(rocks, dirt paths and gravel dirt)</span></li><li><code>floors_exterior_tilesandstone_01</code> <span class="muted">(paving stones)</span></li><li><code>floors_burnt_01</code> <span class="muted">(burnt ground)</span></li><li><code>vegetation_trees_01</code> <span class="muted">(trees)</span></li><li><code>vegetation_foliage_01</code> <span class="muted">(bushes)</span></li><li><code>vegetation_groundcover_01</code> <span class="muted">(flowers, grass tufts)</span></li><li><code>vegetation_farm_01</code> <span class="muted">(corn)</span></li><li><code>fencing_burnt_01</code> <span class="muted">(burnt trees)</span></li><li><code>boulders</code> <span class="muted">(boulders)</span></li><li><code>d_plants_1</code> <span class="muted">(shore plants)</span></li><li><code>d_generic_1</code> <span class="muted">(ferns and generic plants)</span></li><li><code>trash_01</code> <span class="muted">(litter)</span></li><li><code>d_streetcracks_1</code> <span class="muted">(road cracks)</span></li></ul>
+
+<h3>Looking after the library</h3>
+<ul>
+<li>Each sheet can be <strong>renamed</strong>, put in a <strong>group</strong>, or <strong>removed</strong>. <em>Undo</em> reverses the last change. Groups open and close, and <em>Expand all groups</em> and <em>Collapse all groups</em> do them all at once.</li>
+<li>The search box and the sort order help find a sheet. Clicking a sheet shows its tiles with their numbers.</li>
+<li>Sheets are read as 8 tiles across, each twice as tall as wide. For a sheet laid out differently, type the tile size into the boxes next to <em>Add tilesheets or RAR</em> before adding it.</li>
+</ul>
+
+
+<h2 id="ingame">Annotation map creator</h2>
+<p>The Annotation map creator is a window of its own for everything that is placed on top of the painted map: the names for the map that opens with the <kbd>M</kbd> key in the game, the <strong>player spawn points</strong> and the <strong>zones</strong>. Open it with the <em>Annotation map creator</em> tab in the menu bar or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>. It sits beside the editor and sends every change back to it, and everything is saved in the project file.</p>
+<figure class=""><a href="img/ingame-designer.png" class="zoom"><img src="img/ingame-designer.png" alt="The Annotation map creator: the map in the middle, the types on the right, the selected item and the list below." loading="lazy"></a><figcaption>The Annotation map creator: the map in the middle, the types on the right, the selected item and the list below.</figcaption></figure>
+<h3>What it shows</h3>
+<p>The window draws a picture of the open map: grass, bare ground, water, roads and forest. Three styles are available: <em>Editor colours</em> (the colours from the editor, the default), <em>Parchment</em> (similar to the in-game map) and <em>Ink on white</em> (for printing). The cell grid and the names can be switched on and off. After the map is changed in the editor, <em>Refresh map</em> reads it again. Names are never lost by a refresh.</p>
+<h3>Adding names</h3>
+<div class="tbl"><table>
+<tr><th>Group</th><th>Types</th><th>How it is placed</th></tr>
+<tr><td><strong>Places</strong></td><td>City, Town, Village, Hamlet, Landmark, Note</td><td>Choose the type, click the map where the name belongs, type the name and press <kbd>Enter</kbd>. Cities and towns get a marker and larger lettering.</td></tr>
+<tr><td><strong>Roads</strong></td><td>Highway, Main road, Street, Trail</td><td>Choose the type, then click each bend of the road. <kbd>Enter</kbd> or a double-click finishes the line, and the name is typed next. The name follows the line.</td></tr>
+<tr><td><strong>Water</strong></td><td>Ocean, Lake, Pond (placed like places); River, Creek (drawn like roads)</td><td>Oceans, lakes and ponds are labelled at a point, with wide letter spacing for large bodies. Rivers and creeks are drawn as lines and the name follows the bend.</td></tr>
+</table></div>
+<p><kbd>Esc</kbd> cancels a line in progress, or an unnamed name. A name that is left blank is not kept.</p>
+<h3>Player spawn points</h3>
+<p>A spawn point is where a new character can start. Without at least one, the map cannot be chosen for a new game. Choose <em>Spawn point</em> under <em>Player spawns</em> and click the map; every click adds one, and no name is needed. Selecting a spawn point shows:</p>
+<ul>
+<li><strong>Every profession can start here</strong>, ticked by default. Untick it and open <em>Choose professions</em> to limit the point to some professions, for example police officers at the police station.</li>
+<li><strong>Floor</strong>: 0 is the ground, 1 the first floor up, -1 a basement.</li>
+<li>An optional name, for your own reference only.</li>
+</ul>
+<p>Spawn points are written to <code>spawnpoints.lua</code>, listed by profession, in world tiles. The layout follows the spawn point writer in WorldEd (<code>posX</code>, <code>posY</code>, <code>posZ</code>).</p>
+<h3>Zones</h3>
+<p>Zones tell the game what kind of place an area is. Foraging, town zombies, farms and power or water cuts depend on them. Choose a zone type under <em>Zones (objects.lua)</em> and drag a rectangle on the map. A selected zone can be moved by dragging inside it and resized by dragging a corner square. Its type can be changed in the panel on the right.</p>
+<div class="tbl"><table>
+<tr><th>Zone</th><th>Game name</th><th>Use it for</th></tr>
+<tr><td>Town</td><td><code>TownZone</code></td><td>Streets and buildings.</td></tr>
+<tr><td>Forest, Deep forest</td><td><code>Forest</code>, <code>DeepForest</code></td><td>Woodland. Deep forest is the thick woods far from roads, with the best foraging.</td></tr>
+<tr><td>Vegetation</td><td><code>Vegitation</code></td><td>Fields, verges and open grass. The game spells it this way.</td></tr>
+<tr><td>Nav</td><td><code>Nav</code></td><td>Roads and paths.</td></tr>
+<tr><td>Farm, Farm land, Ranch</td><td><code>Farm</code>, <code>FarmLand</code>, <code>Ranch</code></td><td>Farm yards, crop fields and animal ranches.</td></tr>
+<tr><td>Trailer park</td><td><code>TrailerPark</code></td><td>Trailer parks.</td></tr>
+<tr><td>No power, No water, No power or water</td><td><code>NoPower</code>, <code>NoWater</code>, <code>NoPowerOrWater</code></td><td>Areas cut off from the mains.</td></tr>
+</table></div>
+<p>Zones are written to <code>objects.lua</code> as rectangles in world tiles, the same way WorldEd writes them. Build 42 also reads the foraging zones from <strong>biome maps</strong>, one small picture per cell, and the mod export writes those from the same zones. In Build 42, Vegetation and Nav forage as ordinary ground, and Ranch and the power and water zones are not foraging zones.</p>
+<h3>Finding water automatically</h3>
+<p><em>Find water bodies</em> examines the map and adds a blank name for every body of water that is large enough. Each one is sorted by shape: a very large body touching the map edge is an ocean, a long thin body is a river or a creek (by width), and the rest are lakes or ponds (by area). Rivers and creeks receive a line that follows the water. The blanks are highlighted in orange on the map and are listed as <em>(blank)</em>. Selecting one and typing a name completes it. <em>Remove blank</em> deletes the ones that are not needed.</p>
+<h3>Editing names</h3>
+<ul>
+<li><strong>Select</strong> (<kbd>V</kbd>) a name by clicking it on the map or in the list. A double-click on the map jumps to the name box.</li>
+<li><strong>Move</strong> a name by dragging it. For a line, dragging the body moves the whole line, and dragging a square moves one point. <kbd>Shift</kbd>+click on a selected line adds a bend, and <kbd>Alt</kbd>+click on a square removes it.</li>
+<li><strong>Properties</strong> for the selected name are the text, the type, the letter size, the letter spacing, the angle (for places and water points) and, for lines, the direction of the text.</li>
+<li><strong>List and search.</strong> All names, spawn points and zones are listed by type. The search box filters the list, and clicking an entry centres the map on it.</li>
+<li><strong>Undo and redo</strong> with <kbd>Ctrl</kbd>+<kbd>Z</kbd> and <kbd>Ctrl</kbd>+<kbd>Y</kbd>.</li>
+<li><strong>Navigate</strong> with the mouse wheel (zoom), <kbd>H</kbd> or <kbd>Space</kbd>+drag (pan), <kbd>F</kbd> (fit the whole map) and the arrow keys.</li>
+</ul>
+<p>Names, spawn points and zones are stored in the project file, so they are restored when the project is opened. Starting a new map clears them.</p>
+<h3>Exporting</h3>
+<p>The <em>Export</em> button saves single files. The whole mod, with all of these files in the right folders, is made with <a href="#mod">Export mod</a> in the main window.</p>
+<div class="tbl"><table>
+<tr><th>Format</th><th>Contents</th></tr>
+<tr><td><strong>Map picture (PNG)</strong></td><td>The map in the chosen style with every name written on it, at 1x, 2x or 4x, with an optional cell grid, title and key.</td></tr>
+<tr><td><strong>Map features (XML)</strong></td><td><code>worldmap.xml</code>: named roads (<code>highway</code> with <code>primary</code>, <code>secondary</code>, <code>tertiary</code> or <code>trail</code>), rivers and creeks (<code>waterway</code>), lakes and ponds (<code>natural=water</code>), oceans and settlements (<code>place</code>), and optionally water and forest shapes made from the map. Features are grouped per 256 tile cell. <em>First cell X</em> and <em>Y</em> are the cell numbers of the map's top left corner in the game world. <em>Shape detail</em> sets the size of the blocks that make the water and forest shapes.</td></tr>
+<tr><td><strong>Player spawn points</strong></td><td><code>spawnpoints.lua</code>. <em>First cell X</em> and <em>Y</em> turn the positions into world tiles.</td></tr>
+<tr><td><strong>Zones</strong></td><td><code>objects.lua</code>, also in world tiles.</td></tr>
+<tr><td><strong>Name list (CSV)</strong></td><td>A spreadsheet of every name with its type, position and cell.</td></tr>
+<tr><td><strong>Names (JSON)</strong></td><td>All names in a structured form, for use in other tools.</td></tr>
+</table></div>
+<div class="callout warn"><strong>Check in the game.</strong> The XML, <code>spawnpoints.lua</code> and <code>objects.lua</code> follow the layouts that WorldEd writes. They could not be tested in the game from this editor, so a new game should be tried before a mod is published. The map picture, the CSV and the JSON do not depend on it. If the game rejects the XML, the picture and the name list still hold all of the work.</div>
+
+<h2 id="building">3D building editor</h2>
+<p>The 3D building editor is a separate window for drawing a building floor by floor and looking at it from four angles. Open it with the <b>3D building editor</b> tab in the menu bar or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>. It is based on the building editor in TileZed, with a new layout and menus that match this editor. It shares Tile Manager with the main window, so tilesheets and custom tiles added in either window appear in both.</p>
+<h3>Four views</h3>
+<ul>
+<li><b>Plan</b> (key <kbd>1</kbd>) is a flat map of one floor. It is the quickest way to draw.</li>
+<li><b>Isometric</b> (key <kbd>2</kbd>) is the game angle. Draw directly on it. Raise and lower floors with <kbd>Page Up</kbd> and <kbd>Page Down</kbd>. <b>View &gt; Floors drawn in isometric</b> hides the floors above the one you are working on.</li>
+<li><b>3D</b> (key <kbd>3</kbd>) can be turned with a right-drag, moved with a middle-drag or <kbd>Shift</kbd>+right-drag and zoomed with the wheel. All the drawing tools work in it.</li>
+</ul>
+<p>The fourth view, <b>Game</b>, is described below. Every drawing tool works in the first three views, so you can start in plan and finish in 3D or the other way round.</p>
+<h3>Drawing a building</h3>
+<ol>
+<li>Choose a room in the <b>Rooms</b> tab, or make one with <b>New room</b>. A room has a name, a type, a floor tile and an inside wall tile.</li>
+<li>Use <b>Draw room</b> (<kbd>R</kbd>) to drag rectangles. Walls appear on their own wherever two different rooms meet, or a room meets the outside. <b>Pencil</b>, <b>Fill</b> and <b>Erase</b> change the shape, and <b>Wall</b> adds a free wall inside a room.</li>
+<li>Put <b>Doors</b> (<kbd>D</kbd>) and <b>Windows</b> (<kbd>N</kbd>) on walls. Right-click removes them. Doors can be a normal door or an open archway.</li>
+<li>Add floors with the <b>Floor</b> menu. Basements go below the ground floor. Place <b>Stairs</b> (<kbd>S</kbd>) on the lower floor: they are five tiles long and the floor above gets the opening automatically. <kbd>Space</kbd> turns them.</li>
+<li>Place <b>Furniture</b> (<kbd>T</kbd>) and add <b>Roofs</b> (<kbd>O</kbd>), or use <b>Building &gt; Add a roof over the top floor</b>.</li>
+<li>Run <b>Building &gt; Check building</b> to list rooms with no door, a ground floor with no outside door and stairs that lead nowhere. Click an item to see where it is.</li>
+</ol>
+<p>The tool bar under the menus shows the options of the current tool. Hold <kbd>Alt</kbd> and click to pick the room under the pointer with any tool. Copy, cut and paste work on a selected area of one floor, and <b>Building</b> has rotate and flip.</p>
+<h3>Tiles inside and outside</h3>
+<p>Each wall has two faces. The face towards a room uses that room's inside wall tile. The face towards the outside uses the building's exterior wall tile. The <b>Tiles</b> tab sets the building's choices for exterior walls, trim, doors, windows, curtains, stairs, roofs and the default inside walls and floors. Pick a room's own floor and inside wall in the <b>Rooms</b> tab.</p>
+<p>A tile choice is an <b>entry</b>, a named set of tile names for one purpose (for example the west and north pieces of a wall). Every entry is made of the game's own tiles. The editor knows the game's wall, floor, door, window, stair, roof and furniture sets (from TileZed's catalogs, bundled as names only, with no pictures) and offers each one as soon as the tilesheets it uses are in the Tile Manager. Floors and ceilings in sheets the catalog does not know are found by their sheet names. Nothing is offered for sheets you have not imported, and there are no stand-in colours or shapes. With nothing imported the Tiles and Furniture panels say so and point to the Tile Manager. To add more:</p>
+<ul>
+<li>Add your tilesheets in the <b>Tile Manager</b> (<b>Tiles &gt; Tile Manager</b>). Tile names are the sheet name and a number, for example <code>walls_exterior_01_8</code>.</li>
+<li>Make your own entries with <b>New entry</b> in any tile picker, or import the catalogs of a mod's tile set with <b>Tiles &gt; Import TileZed catalogs</b> (<code>BuildingTiles.txt</code> and <code>BuildingFurniture.txt</code>). The Tile Manager also files these when they are in a folder or archive you drop on it. Buildings saved by earlier versions with plain colours or shape furniture are cleaned when opened: those parts are removed and you choose game tiles instead.</li>
+</ul>
+<h3>Game view</h3>
+<p>The fourth view (key <kbd>4</kbd>, button <b>Game</b>) draws the building the way the game builds it from your plan: the real wall pieces for each room, corner and end pillars, doors and windows in their frames, curtains on the inside of outside windows, ceilings, stairs with the hole above them, and roofs on the level above. It uses the same layout rules as TileZed and the same tiles that go into the lot files, so what you see is what the map gets. The game's lighting, weather and shaders are not drawn. It needs the full tilesheets in the Tile Manager; where a sheet is missing the square is drawn as a plain colour and the status bar counts the missing tiles. <b>View &gt; Cut away upper floors</b> and <b>Low front walls</b> let you see inside.</p>
+<h3>Furniture and props</h3>
+<p>Everything the editor offers is in sections that open and close: the furniture by kind (Kitchen, Bedroom, Lighting...), the tile pickers by what the tiles are (<em>Exterior walls &middot; House</em>, <em>Floors &middot; Tilesandwood</em>...), with <em>Expand all</em> and <em>Collapse all</em>.</p>
+<p>The furniture picker (<kbd>T</kbd>) lists the furniture from the game's own tile definitions, with a picture of each piece. Choose a source: <b>Game furniture</b>, <b>Any tile</b> or one of the imported catalog groups. The room filter shows what suits the selected room. Pieces are tagged (container, bed, seat, light switch, no art) and show the game's names. The list is sorted into collapsible sections (Lighting, Bathroom, Kitchen, Bedroom, Office and school, Shop and storage, Outdoor and garden, Living room, Appliances and Other) built from the game's own group names; each heading shows how many pieces it holds. <b>Expand all</b> and <b>Collapse all</b> open or close every section, the sections you leave open are remembered, and the section holding the piece you are placing opens by itself. Searching shows only the sections with matches. <b>Any tile</b> uses the group names from Tile Manager as its sections. A long section shows a page at a time with a button for more.</p>
+<h3>Game room names</h3>
+<p>In the <b>Rooms</b> tab, <b>Game room name</b> is the name the game uses for loot and zombie placement, such as <code>kitchen</code>, <code>bedroom</code> or <code>livingroom</code>. A name the game does not know is flagged, because it would give a room with no loot. Door, seat, bed and light-switch objects are written into the lot header with the rooms.</p>
+<h3>Clutter and decay</h3>
+<p><b>Building &gt; Clutter and decay</b> (<kbd>Ctrl</kbd>+<kbd>G</kbd>) dresses the building on screen. The same dialog is in the main window at <b>Map &gt; Clutter and decay</b> (<kbd>Ctrl</kbd>+<kbd>G</kbd>) for roads, yards and every placed building. It replaces the old building generator.</p>
+<ul>
+<li><b>Clutter</b> and <b>Decay</b> are two sliders from Off to 10. Each level has a short description under the slider. Clutter adds rubbish, papers, cans, food, medical items, blood and bones. Decay adds cracks, plants growing inside and outside, vines, broken glass, boarded windows, burnt cars and burnt houses.</li>
+<li><b>Presets:</b> <em>Week one</em> (3, 2), <em>Six months</em> (6, 5) and <em>Ten years</em> (8, 10).</li>
+<li>Every category can be switched <b>Off</b>, <b>Fewer</b>, <b>Normal</b> or <b>More</b>. A category starts at a given level and the dialog shows which.</li>
+<li>The <b>seed</b> decides the result: the same seed and settings give the same dressing. <b>Re-roll</b> picks another. The line at the bottom previews how many tiles and items will be added.</li>
+<li>Tiles go into the lot files. Items, broken glass, boards and burnt cars cannot be tiles, so a small Lua script in the exported mod places them the first time each square loads. The checklist in the export window reports any item name the game does not know.</li>
+<li><b>Remove dressing</b> clears it again. In a building, apply and remove can be undone.</li>
+<li>The tile choices come from the file <code>dressing.txt</code> in the tiles folder, which can be edited.</li>
+</ul>
+<h3>.tbx files</h3>
+<p><b>File &gt; Import TileZed building (.tbx)</b> reads a building made in TileZed or WorldEd (BuildingEd versions 2 to 7). <b>File &gt; Export TileZed building (.tbx)</b> writes the building, so it can be opened there. Open also accepts a <code>.tbx</code> file. A house with basements is written as two files: <code>Name.tbx</code> for the floors from the ground up, and <code>Name_basement.tbx</code> for the basements (the lowest basement is floor 0, as BuildingEd keeps basements as a building of their own). The window says so when it saves. Anything else that cannot be carried across is listed after the conversion.</p>
+<h3>Placing buildings and props on the map</h3>
+<p>In the main window, <b>Buildings</b> and <b>Props</b> are the two house and furniture keys near the bottom of the tool bar (<kbd>U</kbd> and <kbd>K</kbd>). Either one opens the <b>Props</b> tab of the panel window, in place of the Layers tab, with a panel of its own: a list at the top, and a preview with the controls underneath. <b>Close</b> (or choosing any other tool) brings the usual panels back.</p>
+<p><b>Categories in the Buildings list.</b> The list is grouped by category (<em>Houses</em>, <em>Shops</em>, <em>Restaurants and bars</em>, <em>Medical</em>, <em>Emergency and law</em>, <em>Industrial and farm</em> and so on), guessed from the building's name; anything else is in <em>Other buildings</em>. Choose a building and set its <em>Category</em> under the preview (or make a new category) to put it where you want it. <em>Group by</em> can also group by where a building came from, or show one plain list, and every group opens and closes.</p>
+<p><b>Buildings.</b> The list is what is in the <code>Buildings</code> folder of the <code>Umbra Editor</code> folder (the same folder the 3D building editor saves to), so a <code>.pzbld</code> or <code>.tbx</code> file copied there shows up when you press <b>Refresh</b>. Filters: All, Saved, TileZed, Created this session and Used on this map. Choose a building to see it in the preview (3D, or Plan with a floor chooser), turn it with the two arrow buttons, then click the map or press <b>Place in view</b>. Drag a placed building to move it, <kbd>Q</kbd> turns it, <kbd>Delete</kbd> removes it. A placed building is a copy; <b>Update from library</b> refreshes it after the original has changed. <b>Open in editor</b> opens the file in the 3D building editor. The tool refuses squares outside the map, on water, or overlapping another building, and warns when levels fall outside the allowed range. It clears vegetation round the building (you choose how many squares) and adds a town zone for it unless you untick that. <b>Spawn points are not added automatically.</b></p>
+<p><b>Import .tbx</b> adds TileZed BuildingEd files to the library (you can also drop files on the panel). If a <code>Name_basement.tbx</code> is chosen together with <code>Name.tbx</code> it is added to that house as its basements. Notes about anything that could not be carried over appear in a window afterwards.</p>
+<p>In both panels, <kbd>Up</kbd> and <kbd>Down</kbd> move through the list and choose the piece, <kbd>Home</kbd> and <kbd>End</kbd> jump to the ends, and <kbd>Esc</kbd> clears the search, then closes the panel.</p>
+<p><b>Props.</b> The list comes from the tile system: the game's furniture groups (from <code>BuildingFurniture.txt</code>, imported in Tile Manager) in sections, or <b>Any tile</b> to search every tile in the tilesheets by name. Star a piece to keep it under Favourites; Recent and Used on this map are filters too. The preview shows the piece as it looks in the game or flat, and the Facing buttons or the arrow buttons turn it. Tools: <b>Place</b>, <b>Line</b> (pieces along a drag), <b>Fill area</b>, <b>Scatter</b> (pieces over a dragged rectangle, as thick as the <b>Density</b> slider says), <b>Replace</b>, <b>Pick</b>, <b>Remove</b> and <b>Hide tile</b> (hides the game tile on a square, such as a tree). Props go on any level (<kbd>Page Up</kbd>, <kbd>Page Down</kbd>); right-click removes what you placed and <kbd>Alt</kbd>+click picks with any tool. Placed buildings and props are drawn in the 2D map and the 3D view, are saved in the project and are written into the lot files with their rooms, building outlines, levels and room ids.</p>
+<h3>Saving and naming</h3>
+<ul>
+<li>Type a name in the <b>Building</b> box in the top bar. <b>File &gt; Save</b> (<kbd>Ctrl</kbd>+<kbd>S</kbd>) stores the building in the library under that name, on this PC. <b>File &gt; Open building</b> lists the saved buildings with a thumbnail and can rename, duplicate, delete or export them.</li>
+<li><b>Save to file</b> writes a <code>.pzbld</code> file you can keep, send to someone or open with <b>Open from file</b>.</li>
+<li>The editor keeps a copy of unsaved work and offers it back if the window is closed by accident.</li>
+<li><b>Export picture</b> saves the current view, or every floor, as PNG files.</li>
+</ul>
+<h3>Limits</h3>
+<ul>
+<li>The <code>.pzbld</code> format belongs to this editor. Use <code>.tbx</code> to exchange buildings with TileZed. A <code>.tbx</code> file holds floors from the ground up only, so basements are exported as a second file.</li>
+<li>The 3D view draws walls and floors in the average colour of their tiles, and roofs as plain shapes. The isometric and Game views draw tile art where the library has it. The Game view has no lighting, weather or shaders.</li>
+<li>The simple-shape furniture is drawn as boxes. Furniture from the game and from <code>BuildingFurniture.txt</code> is placed as the tiles it lists.</li>
+<li>Nothing here has been run in the game yet. The layout rules come from the TileZed source and the lot file layout from the game's readers and other tools, and should be checked in Build 42.</li>
+</ul>
+
+<h2 id="mod">Exporting a mod</h2>
+<p><em>File &gt; Export mod (Steam Workshop)</em> or <kbd>Ctrl</kbd>+<kbd>E</kbd> opens one window with everything a map mod and its Steam Workshop page need. The settings are kept in the project, so the next export starts from them.</p>
+<div class="tbl"><table>
+<tr><th>Section</th><th>What it asks for</th></tr>
+<tr><td><strong>Mod</strong></td><td>The name, the mod ID (unique on the Workshop; it is used for the folder and a server's <code>Mods=</code> line), the author, a description and the poster picture. The picture is made from the map with its title, or from a picture of your own.</td></tr>
+<tr><td><strong>Map</strong></td><td>The map folder name (a server's <code>Map=</code> line), the title in the map list, whether it is its own world or sits next to Knox County (<code>lots=Muldraugh, KY</code>), and the first cell: the cell the top left corner of the map sits on in the game world. Spawn points and zones are written in world tiles from that cell, and WorldEd must use the same world origin.</td></tr>
+<tr><td><strong>Steam Workshop</strong></td><td>The Workshop title and description (the mod's are used when left empty), the visibility and the tags.</td></tr>
+<tr><td><strong>Include</strong></td><td>The BMP images for WorldEd, the spawn points, the zones, the biome maps, the in-game map names and <code>spawnregions.lua</code>. <em>Fill undrawn areas from the map</em> gives water the water zone and painted forest the forest zone wherever no zone was drawn.</td></tr>
+<tr><td><strong>Checklist</strong></td><td>What is ready and what is missing. A line at the bottom of the window sums it up. It reads the map when the window opens and warns about spawn points in water, off the map or on unpainted ground, a missing Unemployed spawn point, zones off the map, no Town zone, empty cells or a whole empty edge row, placed buildings past the edge, in water or overlapping, and missing Workshop tags. It also says which world cells the map covers. Only a missing name, a bad ID, a bad folder name or a vanilla map name stops the export.</td></tr>
+</table></div>
+<p><strong>Size estimate.</strong> The small text at the far right of the tool options window shows the estimated size of the exported mod for the map as it is now, and the Steam Workshop download after Steam's compression. It follows every change. A painted square costs about 12 bytes and each extra tile on it 4 more, so a fully painted cell is about 0.8 MB.</p>
+<p>The desktop app asks for a folder and writes two folders into it. A browser downloads the same thing as a ZIP file.</p>
+<pre class="code">MyMap/                              the Workshop item: copy it into Zomboid\Workshop
+  workshop.txt
+  preview.png                       256 by 256
+  Contents/mods/MyMap/
+    42/mod.info
+    42/poster.png                   512 by 512
+    common/media/maps/MyMap/
+      map.info
+      thumb.png
+      spawnpoints.lua
+      spawnregions.lua
+      objects.lua
+      worldmap.xml, worldmap.xml.bin              the in-game map
+      worldmap-forest.xml, worldmap-forest.xml.bin
+      X_Y.lotheader, world_X_Y.lotpack, chunkdata_X_Y.bin   per cell, the map itself
+      maps/biomemap_X_Y.png         one per cell, the foraging zones
+    common/media/lua/shared/MyMap_dressing_data.lua    clutter and decay items (only with dressing)
+    common/media/lua/server/MyMap_dressing.lua         places them when a square first loads
+MyMap - WorldEd source/
+  name.bmp, name_veg.bmp, name_ZombieSpawnMap.bmp
+  spawnregions.lua                  the line a server needs
+  NEXT STEPS.txt</pre>
+<h3>The lot files</h3>
+<p><em>Build the lot files</em> makes the files the game loads the map from, so WorldEd is not needed. For every cell it writes a <code>.lotheader</code> (the tile names and the zombie density of each 8 by 8 chunk), a <code>.lotpack</code> (the tiles of every square, on every level a building uses) and a <code>chunkdata</code> file (solid, water and empty squares for path finding). The tiles come from <code>Rules.txt</code> in the same way as WorldEd's BMP to TMX:</p>
+<ul>
+<li>Each colour places one of its tiles at random, the same one every time the map is exported.</li>
+<li>Vegetation sits on top of the ground, and colours that need grass only grow on the three grass colours.</li>
+<li>With <code>Blends.txt</code> in the tiles folder the edges between ground types are blended. Without it the edges are hard.</li>
+<li>With the game's <code>.tiles</code> files in <code>tiledefs</code>, walls, solid tiles and water are marked for path finding. Without them only water is marked, from the water tiles.</li>
+</ul>
+<p>A cell takes well under a second. The desktop app writes each cell as it is made, so map size is limited only by disk space: about 1 MB per cell. A browser builds them for maps of up to 64 cells. Placed buildings, their rooms and props, and clutter and decay tiles are written too. Jumbo trees are not added; for those the map can still be opened in WorldEd, and <code>NEXT STEPS.txt</code> lists the settings to use there. It also says how to test the mod and upload it from the game's Workshop menu.</p>
+<div class="callout warn"><strong>Check in the game.</strong> The layout and files were checked against WorldEd's own writers and other Build 42 map tools: the <code>42</code> folder with <code>mod.info</code> (<code>versionMin=42.0</code>), the map under <code>common/media/maps</code>, the Lua files in world tiles, the biome map values from the game's BiomeMapConfig, and the Workshop tags, visibility words and 256 px preview. The lot files, chunk data and <code>worldmap.xml.bin</code> follow the Build 42 layouts written by WorldEd and are read back by the editor's tests. None of this has been run in the game from this editor, so test the mod in a new game before uploading it.</div>
+
+<h2 id="worlded">Importing into WorldEd</h2>
+<p>WorldEd is optional now: the mod export builds the lot files itself. These steps are for adding hand-made detail in WorldEd and TileZed, which then rebuild the lot files.</p>
+<p>These are the steps from the Project Zomboid mapping guide on Steam, adapted to the files that this editor writes. WorldEd is part of the TileZed tools.</p>
+<ol class="steps">
+<li><strong>Export</strong> with <em>File &gt; Export BMP (all maps)</em>. The files <code>name.bmp</code>, <code>name_veg.bmp</code> and <code>name_ZombieSpawnMap.bmp</code> should be kept together in one folder.</li>
+<li><strong>Open WorldEd.</strong> In TileZed, choose <em>Tools &gt; WorldEd</em>, then make a new world (<em>File &gt; New</em>) and save it.</li>
+<li><strong>Add the map.</strong> Drag <code>name.bmp</code> from the folder onto the world in WorldEd. It appears as a block of cells.</li>
+<li><strong>Convert it.</strong> Choose <em>File &gt; BMP to TMX</em>. In the dialog, tick the two boxes that load the base and the vegetation images, and check that rogue colours and antialiasing are off. The editor never produces rogue colours, so none should be reported.</li>
+<li><strong>Save</strong> the world.</li>
+<li><strong>Generate the lots.</strong> Choose <em>File &gt; Generate Lots</em>. The field for the zombie spawn map is set to <code>name_ZombieSpawnMap.bmp</code>.</li>
+<li><strong>Spawn points and zones.</strong> The editor already writes <code>spawnpoints.lua</code> and <code>objects.lua</code> from the Annotation map creator, so they do not have to be placed again in WorldEd.</li>
+<li><strong>In-game map.</strong> In WorldEd, the in-game map tools produce the map files for the <kbd>M</kbd> map. The names created in the <a href="#ingame">Annotation map creator</a> are exported separately.</li>
+</ol>
+<div class="callout warn"><strong>Verification note.</strong> These steps were confirmed from the written guide only, not by running WorldEd. Menu names can differ between versions. Build 42 uses 256 by 256 tile cells; the older tools assume 300 by 300 cells, so the version of WorldEd in use must support 256 cells. The community build at <code>github.com/Unjammer/PZ_Mapping_Tools</code> is the source the tools come from, and the official download is the one in the Steam guide. If lot generation reports a size problem, the version is the first thing to check.</div>
+
+<h2 id="perf">Performance settings</h2>
+<p>The editor adapts to the computer. At start it reads the number of processor cores and the amount of memory, and chooses one of three tiers. The tier sets how many map pictures are kept ready, how much undo history is stored, and how sharp the 3D view is drawn. <em>Options</em> panel, under Performance, shows the tier that was detected and allows a different one to be forced.</p>
+<div class="tbl"><table>
+<tr><th>Setting</th><th>Suited to</th><th>Behaviour</th></tr>
+<tr><td><strong>Automatic</strong></td><td>Most computers</td><td>Chooses Low memory, Balanced or High from the detected cores and memory.</td></tr>
+<tr><td><strong>Low memory</strong></td><td>2 cores or fewer, or 4 GB of memory or less, such as older laptops</td><td>Smallest picture caches and a short undo history. The 3D view is drawn at a lower pixel density.</td></tr>
+<tr><td><strong>Balanced</strong></td><td>Typical computers between the other two tiers</td><td>Medium caches and undo history.</td></tr>
+<tr><td><strong>High</strong></td><td>8 or more cores and 8 GB of memory or more</td><td>Large caches and a long undo history, and the 3D view at full sharpness.</td></tr>
+</table></div>
+<p>Further measures work on every tier. Areas that hold one colour (open sea, a grass field) are stored once and shared, so they use almost no memory. Fills, flood fill, replace colour and rectangle painting work on whole areas at once. Map pictures are drawn in three levels of detail according to the zoom. The desktop app also has <em>Options &gt; Memory limit</em>, which raises the memory limit for very large maps.</p>
+<h3>Measured results</h3>
+<p>These figures were measured by running the editor with the processor slowed to imitate weaker computers (sixfold slower for the 4 GB entry-level profile, no slowdown for the high-end profiles). Times are in milliseconds for one operation on a map filled with grass and scattered features.</p>
+<div class="tbl"><table>
+<tr><th>Operation</th><th>Entry level, 16 by 16</th><th>Mid range, 50 by 50</th><th>High end, 100 by 100</th></tr>
+<tr><td>Fill every cell</td><td>65</td><td>83</td><td>316</td></tr>
+<tr><td>Flood fill a large area</td><td>1</td><td>1</td><td>3</td></tr>
+<tr><td>Replace one colour on the whole map</td><td>11</td><td>44</td><td>58</td></tr>
+<tr><td>Open a saved project</td><td>349</td><td>709</td><td>2377</td></tr>
+<tr><td>Memory in use with 100 by 100 cells</td><td colspan="2">about 1.1 to 1.7 GB in total, from 3.1 GB before the changes</td><td></td></tr>
+</table></div>
+<p>The earlier version needed several seconds for flood fill and colour replacement on a 50 by 50 map, and about 20 seconds on a 100 by 100 map. These results come from a test computer and a software graphics driver, not from the machines named, so real times will differ.</p>
+
+<h2 id="keys">Keyboard shortcuts</h2>
+<div class="tbl"><table>
+<tr><th>Keys</th><th>Action</th></tr>
+<tr><td><kbd>B</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>N</kbd></td><td>Brush, Eraser, Forest spray, Natural</td></tr>
+<tr><td><kbd>L</kbd> <kbd>R</kbd> <kbd>O</kbd> <kbd>P</kbd> <kbd>D</kbd></td><td>Line, Rectangle, Ellipse, Polygon, Road</td></tr>
+<tr><td><kbd>F</kbd> <kbd>X</kbd> <kbd>I</kbd> <kbd>C</kbd> <kbd>H</kbd></td><td>Flood fill, Replace colour, Colour picker, Cell select, Pan</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd>, <kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>Undo, redo (also <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd>)</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>S</kbd>, <kbd>Ctrl</kbd>+<kbd>O</kbd></td><td>Save, open project</td></tr>
+<tr><td><kbd>[</kbd> <kbd>]</kbd></td><td>Smaller, larger brush (1 to 450 pixels; the steps get bigger as the brush does)</td></tr>
+<tr><td><kbd>0</kbd> to <kbd>9</kbd></td><td>Choose a colour by its number in the active palette</td></tr>
+<tr><td><kbd>Alt</kbd>+click</td><td>Pick a colour with any tool</td></tr>
+<tr><td><kbd>Shift</kbd>+click</td><td>Straight line from the last stamp (brush, eraser). While Shift is held a dashed guide shows the line.</td></tr>
+<tr><td>Wheel, <kbd>+</kbd> <kbd>-</kbd>, <kbd>Ctrl</kbd>+<kbd>0</kbd>, <kbd>Ctrl</kbd>+<kbd>1</kbd></td><td>Zoom, fit to window, actual size</td></tr>
+<tr><td><kbd>Space</kbd>+drag, middle drag</td><td>Pan</td></tr>
+<tr><td><kbd>G</kbd></td><td>Cell grid on or off</td></tr>
+<tr><td><kbd>M</kbd></td><td>Next map: Base, Vegetation, Zombie spawn</td></tr>
+<tr><td><kbd>V</kbd></td><td>3D view on or off</td></tr>
+<tr><td><kbd>Enter</kbd>, <kbd>Esc</kbd></td><td>Finish or cancel a road or polygon</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd></td><td>Open the Annotation map creator</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>E</kbd></td><td>Export the mod</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd></td><td>Open the 3D building editor</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>G</kbd></td><td>Clutter and decay for the map</td></tr>
+<tr><td><kbd>U</kbd> <kbd>K</kbd></td><td>Buildings panel, Props panel (<kbd>Q</kbd> turns, <kbd>Delete</kbd> removes)</td></tr>
+<tr><td><kbd>F1</kbd></td><td>This help, in its own window</td></tr>
+</table></div>
+<h3>In the Annotation map creator</h3>
+<div class="tbl"><table>
+<tr><th>Keys</th><th>Action</th></tr>
+<tr><td><kbd>V</kbd>, <kbd>H</kbd></td><td>Select tool, pan tool</td></tr>
+<tr><td><kbd>Enter</kbd></td><td>Finish a road, river or creek line; confirm a typed name</td></tr>
+<tr><td><kbd>Esc</kbd></td><td>Cancel the line or the name in progress; leave the placing tool</td></tr>
+<tr><td><kbd>Delete</kbd></td><td>Remove the selected name</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd>, <kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>Undo, redo</td></tr>
+<tr><td>Wheel, <kbd>+</kbd> <kbd>-</kbd>, <kbd>F</kbd></td><td>Zoom, fit the whole map</td></tr>
+<tr><td><kbd>Space</kbd>+drag, arrow keys</td><td>Pan</td></tr>
+</table></div>
+
+<h3>In the 3D building editor</h3>
+<div class="tbl"><table>
+<tr><th>Keys</th><th>Action</th></tr>
+<tr><td><kbd>V</kbd> <kbd>H</kbd> <kbd>I</kbd></td><td>Select, Pan, Pick room</td></tr>
+<tr><td><kbd>R</kbd> <kbd>B</kbd> <kbd>F</kbd> <kbd>E</kbd></td><td>Draw room, Pencil, Fill, Erase</td></tr>
+<tr><td><kbd>W</kbd> <kbd>D</kbd> <kbd>N</kbd></td><td>Wall, Door, Window</td></tr>
+<tr><td><kbd>S</kbd> <kbd>T</kbd> <kbd>O</kbd></td><td>Stairs, Furniture, Roof</td></tr>
+<tr><td><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></td><td>Plan, Isometric, 3D, Game</td></tr>
+<tr><td><kbd>Page Up</kbd> <kbd>Page Down</kbd></td><td>Floor up, floor down</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>N</kbd> <kbd>O</kbd> <kbd>S</kbd></td><td>New, open, save</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>G</kbd></td><td>Clutter and decay</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd>, <kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>Undo, redo</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> <kbd>C</kbd> <kbd>V</kbd>, <kbd>Del</kbd></td><td>Cut, copy, paste, delete the selection</td></tr>
+<tr><td><kbd>Space</kbd></td><td>Turn stairs or furniture before placing; with a drag, move the view</td></tr>
+<tr><td>Right button</td><td>Erase with the current tool</td></tr>
+<tr><td><kbd>Alt</kbd>+click</td><td>Pick the room under the pointer</td></tr>
+<tr><td>Arrow keys, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Q</kbd></td><td>Draw without a mouse: move the tile cursor, start and finish a drag, cancel, change the edge used by doors and windows</td></tr>
+<tr><td><kbd>F1</kbd></td><td>This help</td></tr>
+</table></div>
+
+<h2 id="access">Accessibility and settings</h2>
+<ul>
+<li>Every control can be reached with the keyboard. The menus work with <kbd>Tab</kbd>, the arrow keys, <kbd>Enter</kbd> and <kbd>Esc</kbd>. Buttons have text labels for screen readers.</li>
+<li>Colour is never the only clue: every colour has a name, and the colour list can be switched from swatches to a named list.</li>
+<li><em>Options &gt; Memory limit</em> sets the memory limit in the desktop app.</li>
+</ul>
+
+<h2 id="trouble">Troubleshooting</h2>
+<div class="tbl"><table>
+<tr><th>Problem</th><th>What to try</th></tr>
+<tr><td>The 3D view says it cannot start.</td><td>It needs WebGL2. The graphics driver should be updated, and hardware acceleration must not be switched off for the app.</td></tr>
+<tr><td>Trees or grass do not show for a "needs grass" colour.</td><td>One of the three grass colours must be painted on the base map under it. See the vegetation colour table.</td></tr>
+<tr><td>A tilesheet looks cut in the wrong places.</td><td>The sheet should be removed, its real tile width and height typed in the Tile Manager, and the sheet added again.</td></tr>
+<tr><td>A file is refused in the Tile Manager review.</td><td>The review gives the reason next to the file. Common reasons are a non-image file, a JPEG, a blank image, or a sheet that is already in the library.</td></tr>
+<tr><td>A RAR archive adds nothing.</td><td>The archive may hold no PNG files, may be password protected, or may use a RAR format the editor cannot read. The review lists the reason. The files can be unpacked first and added as a folder.</td></tr>
+<tr><td>Tile art does not show in 3D.</td><td>The <em>Tile art</em> box must be ticked in the 3D panel, and the sheet for that colour must be in the library. At wide zoom levels the ground is drawn in flat colour; zooming in shows the ground tiles.</td></tr>
+<tr><td>WorldEd reports rogue colours.</td><td>The colour is not in <code>Rules.txt</code>. Import the <code>Rules.txt</code> in use, or correct the palette entry.</td></tr>
+<tr><td>Something is missing from the export.</td><td>A layer that is switched off (eye button in the Layers panel) is left out of the export. It should be switched on and the export repeated.</td></tr>
+<tr><td>The Annotation map creator does not open.</td><td>In a normal browser, pop-up windows must be allowed for the page. In the desktop app, the window can be reopened with its tab in the menu bar.</td></tr>
+<tr><td>The Annotation map creator shows an old picture of the map.</td><td>Press <em>Refresh map</em> after changing the map in the editor.</td></tr>
+<tr><td>The editor is slow on a very large map.</td><td>Options &gt; Performance can be set to Low memory, the memory limit in <em>Options &gt; Memory limit</em> can be raised, other programs can be closed, and fewer layers can be used.</td></tr>
+<tr><td>This help window does not open.</td><td>In a normal browser, pop-up windows must be allowed for the page.</td></tr>
+</table></div>
+
+<h2 id="limits">Limits and sources</h2>
+<ul>
+<li>The colours and tile names come from the <code>Rules.txt</code> provided to the editor. A newer one should be imported if the game changes.</li>
+<li>The zombie spawn pixel scale for 256 tile cells is not confirmed. See <a href="#maps">Maps</a>.</li>
+<li>The WorldEd steps come from the Steam guide and are not tested against Build 42.</li>
+<li>The XML, <code>spawnpoints.lua</code> and <code>objects.lua</code> written by the Annotation map creator, and the lot files with buildings and rooms, follow the game's and WorldEd's file layouts but are not tested in the game.</li>
+<li>The 3D view is a preview and does not draw blended edges between ground types.</li>
+<li>RAR import reads standard RAR 5 archives. Password-protected archives and some older RAR formats are not read.</li>
+</ul>
+<p>Sources: the Project Zomboid mapping guide on Steam and the Project Zomboid forums for the file names and the WorldEd steps; the TileZed and WorldEd source (<code>github.com/Unjammer/PZ_Mapping_Tools</code>) for the isometric view and the tile layout.</p>
+
+<h2 id="about">About</h2>
+<p>This tool was designed and developed for personal use. AI assisted with the UI and some of the backend code, where there were gaps in knowledge, and with sorting through the mountains of information around the project.</p>
+<p>It was made out of frustration with the existing tools. They are excellent, but none of them does exactly what was being chased.</p>
+<p>Feedback is welcome.</p>
+<p>Developed and created by <strong>DeadJ</strong>.</p>
+<h3>Credits and the game's tile data</h3>
+<p>Umbra Editor is a free community tool for making Project Zomboid maps. It is not sold and it is not an official product of The Indie Stone. Project Zomboid and all of its art belong to The Indie Stone, and no game art is included: you import the tilesheets from your own copy of the game.</p>
+<p>The 3D building editor and the Props panel know which tiles make up the game's walls, floors, doors, windows, stairs, roofs and furniture. That knowledge is a list of tile names (no pictures) read from the building catalogs of <strong>TileZed / BuildingEd</strong> by Tim Baker, as maintained in the community project <em>PZ Mapping Tools</em> by Unjammer, which is released under the GNU General Public License version 2. The list is in <code>building/vanilla.js</code>, with a notice beside it.</p>
+</main>
+</div>
+
+<dialog id="lb" aria-label="Enlarged picture"><img alt=""><form method="dialog"><button class="btn">Close</button></form></dialog>
+<script>function uh_0x1758(){var _0xb1f5cc=['ChjLDMvUDerLzMf1Bhq','C2XPy2u','zgf0yxnLDa','y2XVC2u','og55B0XJyG','nZvpu3fQz28','ChPWCMvMCW','ys56B29T','Aw5KzxHpzG','oda4mZG5nfvft0ziCG','C2HVD01VzgfS','zM9YrwfJAa','Dgv4DenVBNrLBNq','C3jJ','Aw1N','mtm0nZe1m1v5z2jHyG','AhjLzG','CgfYC2u','i3rVyYbH','Dg9mB3DLCKnHC2u','C2nYB2XS','ywrKrxzLBNrmAxn0zw5LCG','B2zMC2v0vg9W','BgfYz2u','zg9JDw1LBNrfBgvTzw50','nKLKv3DjDG','ndy2mtC4ngfYvu1qyW','AgLKzgvU','nJmYmtjPrgXAz1O','mKTHq3r1tW','CxvLCNLtzwXLy3rVCG','z2v0rwXLBwvUDej5swq','nJe5ntu3rejksw10','DgHLBwu','CgfYzw50tM9Kzq','DgfYz2v0','Aw5WDxq','ywX0','y2XHC3nmAxn0','z2v0sxrLBq','CxvLCNLtzwXLy3rVCKfSBa','mJj1s1zeAfi','DhjPBq','mZmXodKWmJruCLPPAMi','mZiYodbUqNHStKG','y2XPy2S','y2XVC2vZDa'];uh_0x1758=function(){return _0xb1f5cc;};return uh_0x1758();}function uh_0x6fd2(_0x3afea8,_0x176495){var _0x1758b2=uh_0x1758();return uh_0x6fd2=function(_0x6fd2ec,_0x3b4e25){_0x6fd2ec=_0x6fd2ec-0x160;var _0x230da1=_0x1758b2[_0x6fd2ec];if(uh_0x6fd2['YBrwrb']===undefined){var _0x58c6ab=function(_0x391cab){var _0x5c5716='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';var _0x1359f9='',_0x4c4ed6='';for(var _0x8f234=0x0,_0x3c2a8f,_0x1bab93,_0x285b58=0x0;_0x1bab93=_0x391cab['charAt'](_0x285b58++);~_0x1bab93&&(_0x3c2a8f=_0x8f234%0x4?_0x3c2a8f*0x40+_0x1bab93:_0x1bab93,_0x8f234++%0x4)?_0x1359f9+=String['fromCharCode'](0xff&_0x3c2a8f>>(-0x2*_0x8f234&0x6)):0x0){_0x1bab93=_0x5c5716['indexOf'](_0x1bab93);}for(var _0x91ad=0x0,_0x59a9e6=_0x1359f9['length'];_0x91ad<_0x59a9e6;_0x91ad++){_0x4c4ed6+='%'+('00'+_0x1359f9['charCodeAt'](_0x91ad)['toString'](0x10))['slice'](-0x2);}return decodeURIComponent(_0x4c4ed6);};uh_0x6fd2['zxBKCP']=_0x58c6ab,_0x3afea8=arguments,uh_0x6fd2['YBrwrb']=!![];}var _0x3072d1=_0x1758b2[0x0],_0x2a4128=_0x6fd2ec+_0x3072d1,_0xbc185f=_0x3afea8[_0x2a4128];return!_0xbc185f?(_0x230da1=uh_0x6fd2['zxBKCP'](_0x230da1),_0x3afea8[_0x2a4128]=_0x230da1):_0x230da1=_0xbc185f,_0x230da1;},uh_0x6fd2(_0x3afea8,_0x176495);}(function(_0x36368f,_0x50c9b7){var _0x4e0177=uh_0x6fd2,_0x55df5d=_0x36368f();while(!![]){try{var _0x4fc1a9=-parseInt(_0x4e0177(0x174))/0x1+-parseInt(_0x4e0177(0x182))/0x2*(parseInt(_0x4e0177(0x185))/0x3)+parseInt(_0x4e0177(0x181))/0x4*(parseInt(_0x4e0177(0x16a))/0x5)+-parseInt(_0x4e0177(0x17e))/0x6*(parseInt(_0x4e0177(0x16e))/0x7)+-parseInt(_0x4e0177(0x169))/0x8*(-parseInt(_0x4e0177(0x17f))/0x9)+-parseInt(_0x4e0177(0x162))/0xa*(-parseInt(_0x4e0177(0x18e))/0xb)+parseInt(_0x4e0177(0x161))/0xc;if(_0x4fc1a9===_0x50c9b7)break;else _0x55df5d['push'](_0x55df5d['shift']());}catch(_0x10e7cc){_0x55df5d['push'](_0x55df5d['shift']());}}}(uh_0x1758,0xc7e1b),(function(){var _0x3d62f3=uh_0x6fd2;try{var _0x391cab=JSON[_0x3d62f3(0x176)](localStorage[_0x3d62f3(0x18c)](_0x3d62f3(0x16b))||'{}');if(_0x391cab[_0x3d62f3(0x186)])document[_0x3d62f3(0x17d)][_0x3d62f3(0x167)][_0x3d62f3(0x186)]=_0x391cab[_0x3d62f3(0x186)];if(_0x391cab['hc'])document[_0x3d62f3(0x17d)][_0x3d62f3(0x167)]['hc']='1';if(_0x391cab[_0x3d62f3(0x17c)])document['documentElement']['dataset']['large']='1';}catch(_0x285b58){}var _0x5c5716=document[_0x3d62f3(0x184)]('lb'),_0x1359f9=_0x5c5716['querySelector'](_0x3d62f3(0x173));document['addEventListener'](_0x3d62f3(0x163),function(_0x91ad){var _0x1a4fdb=_0x3d62f3,_0x59a9e6=_0x91ad[_0x1a4fdb(0x188)][_0x1a4fdb(0x164)](_0x1a4fdb(0x16c));if(!_0x59a9e6)return;_0x91ad[_0x1a4fdb(0x165)](),_0x1359f9[_0x1a4fdb(0x172)]=_0x59a9e6[_0x1a4fdb(0x175)],_0x1359f9[_0x1a4fdb(0x18a)]=_0x59a9e6[_0x1a4fdb(0x183)](_0x1a4fdb(0x173))[_0x1a4fdb(0x18a)],_0x5c5716[_0x1a4fdb(0x16f)]();}),_0x5c5716[_0x3d62f3(0x17a)](_0x3d62f3(0x163),function(_0x5e094c){var _0x2b891b=_0x3d62f3;if(_0x5e094c[_0x2b891b(0x188)]===_0x5c5716)_0x5c5716[_0x2b891b(0x168)]();});var _0x4c4ed6=[][_0x3d62f3(0x166)]['call'](document[_0x3d62f3(0x18d)](_0x3d62f3(0x177))),_0x8f234=_0x4c4ed6['map'](function(_0xec2337){var _0x84aa48=_0x3d62f3;return document[_0x84aa48(0x184)](_0xec2337['getAttribute'](_0x84aa48(0x175))[_0x84aa48(0x166)](0x1));});function _0x3c2a8f(){var _0x98dac5=_0x3d62f3,_0x531f30=window['scrollY']+0x5a,_0x3a0e48=0x0;_0x8f234[_0x98dac5(0x170)](function(_0x5b7404,_0x4c24e0){var _0x2a3b73=_0x98dac5;if(_0x5b7404&&_0x5b7404[_0x2a3b73(0x17b)]<=_0x531f30)_0x3a0e48=_0x4c24e0;}),_0x4c4ed6[_0x98dac5(0x170)](function(_0x558ed5,_0x5906c3){var _0x33490a=_0x98dac5;_0x558ed5[_0x33490a(0x18b)]['toggle']('on',_0x5906c3===_0x3a0e48);});}window[_0x3d62f3(0x17a)](_0x3d62f3(0x179),_0x3c2a8f,{'passive':!![]}),_0x3c2a8f();var _0x1bab93=document[_0x3d62f3(0x184)]('q');_0x1bab93[_0x3d62f3(0x17a)](_0x3d62f3(0x189),function(){var _0xb660dd=_0x3d62f3,_0x3c9f7c=_0x1bab93['value'][_0xb660dd(0x178)]()[_0xb660dd(0x160)]();_0x4c4ed6[_0xb660dd(0x170)](function(_0x17c9bb){var _0x5d5acc=_0xb660dd;_0x17c9bb[_0x5d5acc(0x187)][_0x5d5acc(0x180)]=_0x3c9f7c&&_0x17c9bb[_0x5d5acc(0x171)][_0x5d5acc(0x178)]()[_0x5d5acc(0x16d)](_0x3c9f7c)<0x0;});});}()));</script>
+</body>
+</html>

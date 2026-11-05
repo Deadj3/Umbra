@@ -1,0 +1,33 @@
+/* Tactical look, shared by the map editor and the building editor: Lexend for letters, Inter (tabular figures) for numbers, Unbounded for the logo letter and name mark,
+   cut corners, wide-set capitals on headings, solid two-tone icons. Fonts are bundled in ./fonts (SIL Open Font License). */
+@font-face{font-family:"Inter";font-style:normal;font-weight:400 800;font-display:swap;src:url("fonts/inter-cyrillic.woff2") format("woff2");unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:"Inter";font-style:normal;font-weight:400 800;font-display:swap;src:url("fonts/inter-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:"Inter";font-style:normal;font-weight:400 800;font-display:swap;src:url("fonts/inter-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"Lexend";font-style:normal;font-weight:400 800;font-display:swap;src:url("fonts/lexend-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:"Lexend";font-style:normal;font-weight:400 800;font-display:swap;src:url("fonts/lexend-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"Unbounded";font-weight:500 800;font-style:normal;font-display:swap;src:url("fonts/unbounded-cyrillic.woff2") format("woff2");unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:"Unbounded";font-weight:500 800;font-style:normal;font-display:swap;src:url("fonts/unbounded-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:"Unbounded";font-weight:500 800;font-style:normal;font-display:swap;src:url("fonts/unbounded-latin.woff2") format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+:root{font-variant-numeric:tabular-nums;--ui:"Lexend","Segoe UI",system-ui,sans-serif;--disp:"Lexend","Segoe UI",system-ui,sans-serif;--num:"Inter","Segoe UI",system-ui,sans-serif;--cap:.2em;--font:14px;--cutp:12px}
+body{font-family:var(--ui);font-weight:500;letter-spacing:.02em}
+button,input,select,textarea{font-family:inherit;font-weight:inherit;letter-spacing:inherit}
+/* numbers and readouts */
+.opt output,#stPos,#zoomVal,.stsize,.dim,.tlcount,.ppcount,input[type=number],#curRgb,.mk,#coords{font-family:var(--num);letter-spacing:0}
+/* headings: wide-set capitals */
+.panel>summary,.lh,.ovt,.mh,.ppsec>.ppsh,.toolname,#insTabs button,.tabs button{text-transform:uppercase;letter-spacing:var(--cap)}
+.mh{font-weight:600}
+.opt,.namefield,.pedit label,.dbody label{font-weight:500}
+/* range sliders: thin rail, small block thumb */
+input[type=range]{-webkit-appearance:none;appearance:none;background:none;height:20px;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--panel3)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:7px;height:15px;margin-top:-6px;background:var(--text);border:0}
+input[type=range]:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+/* icons: solid two-tone, mitred. The accent parts are filled. */
+.ic .t{display:none}
+.ic .p{stroke-width:1.7;stroke-linejoin:miter;stroke-linecap:butt}
+.ic .a{fill:var(--hi);fill-opacity:1;stroke-width:1;stroke-linejoin:miter}
+.ic .s{stroke-width:1.8;stroke-dasharray:none;stroke-linecap:butt}
+.tb[aria-pressed=true] .ic .a,.btn.primary .ic .a,.seg [aria-pressed=true] .ic .a,.mtab.on .ic .a{fill:var(--accent-ink);stroke:var(--accent-ink);fill-opacity:1}
+/* the building editor has a busier top bar, so it uses a slightly smaller size */
+body.bld{--font:13px;--cap:.14em}
+body.bld .seg button{padding:0 10px}

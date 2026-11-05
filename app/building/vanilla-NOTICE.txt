@@ -1,0 +1,10 @@
+vanilla.js: the game's building tile and furniture catalogs
+============================================================
+vanilla.js holds only the NAMES of tiles and how the game groups them (which tiles are the west and north piece of a wall, which tiles make a bed,
+and so on). It contains no pictures and no part of Project Zomboid's art. The editor offers an entry only after the person has imported the
+tilesheets it names from their own copy of the game.
+
+The lists were read from BuildingTiles.txt and BuildingFurniture.txt of TileZed / BuildingEd (Tim Baker; maintained in the community project
+"PZ Mapping Tools" by Unjammer, https://github.com/Unjammer/PZ_Mapping_Tools), which are distributed under the GNU General Public License v2.
+Project Zomboid and its tiles belong to The Indie Stone. Umbra Editor is a free community mod tool, is not sold, and is not an official
+The Indie Stone product. Regenerate with gen_vanilla.js when a newer catalog is wanted.
