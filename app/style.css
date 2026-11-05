@@ -450,3 +450,5 @@ body.lgdragging,body.lgdragging *{cursor:grabbing!important;user-select:none}
 
 .setbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px}
 .setbar strong{flex:1 1 100%}
+.setpages{display:flex;flex-wrap:wrap;gap:4px;flex:1 1 100%}
+.setpages .btn[aria-pressed=true]{outline:2px solid var(--accent);outline-offset:-2px;font-weight:600}

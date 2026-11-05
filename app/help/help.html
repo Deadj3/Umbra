@@ -244,15 +244,57 @@ code,kbd,pre{font-family:Consolas,"Cascadia Mono",ui-monospace,monospace}
 
 <h2 id="colours">Colour reference</h2>
 <p>Every colour is an exact RGB value from <code>Rules.txt</code>. The editor never blends or antialiases, so the exported images contain only these colours. A colour can be renamed or given another RGB value below the colour list in the right panel; change an RGB value only when <code>Rules.txt</code> uses the same colour, because it changes what is exported.</p>
-<h3 id="rulesets">Rule sets: Vanilla and your own colours</h3>
-<p>A <code>Rules.txt</code> can hold more than one set of colours. The editor splits it into <strong>Vanilla</strong> and one or more named sets, and shows one set at a time in the colour strip on the far left and in the Colours panel. When there is more than one set, a flip button sits above the strip (and in the Colours panel): <em>Turn page</em> shows the next set, for both the base map and vegetation. A set is made in either of two ways:</p>
+<h3 id="rulesets">Rules.txt: pages and how to lay the file out</h3>
+<p>The editor reads its colours from a <code>Rules.txt</code>, the same file the game's map tools use. Every colour in the colour strip comes from a <em>rule</em> in that file. The colours are shown as <strong>pages</strong>: Vanilla is page 1, and every extra pack you add to the file (Umbra, or one of your own) is another page. The page name is shown at the top of the colour strip on the left and in the Colours panel; click it to turn the page, or pick a page by name in the Colours panel. Each page holds its own base and vegetation colours, and switching between the base and vegetation maps shows that page's colours for that map. Hover a colour to see its preview and details, as before.</p>
+
+<h4 id="rulesfile">1. One rule</h4>
+<p>A colour is one <code>rule</code> block. These are the keys the editor reads; anything else in a block is ignored.</p>
+<pre class="code">rule
+{
+    label = Umbra Swamp Light
+    bitmap = 0
+    color = 20 60 150
+    tiles = umbra_swamp_light
+    layer = 0_Floor
+}</pre>
 <ul>
-<li><strong>A comment line.</strong> A line such as <code>// ===== MY SET =====</code> (or one starting with <code>#</code>) starts a set called <em>MY SET</em>. It runs until the next such line. A line named <code>Vanilla</code> goes back to Vanilla.</li>
-<li><strong>The label.</strong> If the file has no such lines, every rule whose label starts with <em>Umbra</em> (for example <em>Umbra Swamp Light</em>) goes in the Umbra set.</li>
+<li><code>bitmap</code> is required: <code>0</code> is the base map, <code>1</code> is the vegetation map. A rule with any other value is skipped.</li>
+<li><code>color = R G B</code> is required: three numbers from 0 to 255 separated by spaces. This is the colour painted on the map.</li>
+<li><code>label</code> is the name shown in the editor. Without one the colour is called <em>Rule 0</em>, <em>Rule 1</em> and so on.</li>
+<li><code>tiles</code> is the tile name, or several in square brackets, <code>[name_1 name_2]</code>, or the name of an <code>alias</code>. It is used for the tile art in the 3D view and for the mod export, not for the colour itself.</li>
+<li><code>condition = R G B</code> (vegetation only) makes the rule apply only on that floor colour. The editor adds <em>[conditional]</em> to the name so you can tell it apart.</li>
+<li><code>layer</code> and <code>obsolete = true</code> are read for the tiles and are not needed for the colour.</li>
 </ul>
-<p><strong>Umbra is built in.</strong> The editor starts with Vanilla and the Umbra set already loaded, so there is nothing to import. To update Umbra, change the <code>Rules.txt</code> in your tile folder and restart the editor: the Umbra colours and tile names are brought up to date from it, and Vanilla is left alone. A colour that is no longer in the file stays in the palette, marked <em>(not in Rules.txt)</em>, so the colour numbers in your maps never move. Importing a <code>Rules.txt</code> from the menu works the same way for the tiles, but replaces the colours.</p>
-<p>All the sets share one palette, so the map, the exported images and <code>Rules.txt</code> are the same as before; only the lists you pick from change. Import a <code>Rules.txt</code> from the Tile Manager with <em>Import Rules.txt</em>.</p>
-<p>Turning the page changes only which colours you can pick from. Colours already painted stay as they are, and each set's colours keep their own RGB values.</p>
+<p>Write each block as <code>rule</code>, then <code>{</code>, the keys, and <code>}</code>. A block ends at its first <code>}</code>, so do not put braces inside it. Keys are not case sensitive. An <code>alias</code> block (<code>name = X</code> and <code>tiles = [...]</code>) lets several rules share one list of tiles.</p>
+
+<h4 id="rulespages">2. Making pages</h4>
+<p>Pages are made by <strong>comment lines</strong> in the file. A line on its own that starts with <code>//</code> or <code>#</code>, then at least three <code>=</code> signs, then a name, starts a page:</p>
+<pre class="code">// ===== VANILLA =====
+rule { ... }          the Vanilla rules, as they are now
+
+// ===== UMBRA =====
+rule { ... }          page 2: everything down to the next such line
+
+// ===== MY PACK =====
+rule { ... }          page 3</pre>
+<ul>
+<li>Every rule belongs to the page whose line is above it. Rules above the first line are on the Vanilla page.</li>
+<li>A line named <code>Vanilla</code> goes back to the Vanilla page, so you can put a pack's rules anywhere in the file.</li>
+<li>The pages appear in the order they first show up in the file, after Vanilla. A line with no name makes a page called <em>Custom</em>.</li>
+<li>The trailing <code>=</code> signs are optional, and the name is not case sensitive for <em>Vanilla</em>.</li>
+<li><strong>If the file has no such lines at all,</strong> the editor puts every rule whose label starts with <em>Umbra</em> on the Umbra page, and the rest on Vanilla. Add a line as soon as you want a page of your own.</li>
+</ul>
+<p>If the same colour appears twice for the same map (base or vegetation), the first rule wins and the later one is left out of the colour list, whichever page it is on. Give every colour on every page its own RGB value.</p>
+
+<h4 id="rulesload">3. Getting the file into the editor</h4>
+<ul>
+<li><strong>Your tile folder (the usual way).</strong> Keep the file in the Tile Manager's tile folder under the name <code>Rules.txt</code>. When it has changed, the editor reads it as it starts. The tile names are replaced from the file. On the colour side, only the extra pages are brought up to date: a renamed colour is renamed, a new colour is added to the end, and a colour you removed stays in the list marked <em>(not in Rules.txt)</em> so the colour numbers in your maps never move. Vanilla is not touched.</li>
+<li><strong>File menu, Import Rules.txt.</strong> This replaces the whole colour list with the file's colours (the editor asks first if a map is open, because colour numbers change meaning). The status line says how many colours were imported and which pages were found.</li>
+<li><strong>Tile Manager, Import Rules.txt.</strong> Loads the tile names and brings the extra pages up to date, as the tile folder does.</li>
+</ul>
+<p><strong>Umbra is built in.</strong> The editor starts with Vanilla and Umbra already loaded, so nothing needs importing for them. Once a <code>Rules.txt</code> that has Umbra rules is loaded, the file is used instead of the built-in copy.</p>
+<p>Opening a project keeps your pages: the colours in the project are used, and any colours the editor already has that the project lacks are added to the end of the list. Turning the page changes only which colours you pick from. Colours already painted stay as they are.</p>
+
 <h3>Base map colours</h3>
 <div class="tbl"><table>
 <tr><th>Colour</th><th>RGB</th><th>What it is</th></tr>
